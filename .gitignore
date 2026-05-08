@@ -1,0 +1,19 @@
+# Ambientes Virtuais
+.venv/
+env/
+venv/
+
+# Dados Locais (Excedem limites do Git)
+data/
+*.parquet
+*.csv
+
+# Python Cache
+__pycache__/
+*.pyc
+
+# Arquivos de Sistema
+.DS_Store
+
+# Diretório Gemeni (Cache local da IA)
+.gemini/

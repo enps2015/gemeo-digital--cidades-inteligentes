@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Canvas — Estrutura do Projeto</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a2e;
+    --paper: #f5f0e8;
+    --cream: #ede8d8;
+    --accent: #c0392b;
+    --accent2: #2980b9;
+    --gold: #c9a84c;
+    --light-rule: #d4cfc0;
+    --card-bg: #faf7f0;
+    --shadow: rgba(26,26,46,0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'IBM Plex Sans', sans-serif;
+    min-height: 100vh;
+    padding: 40px 20px 60px;
+  }
+
+  /* Subtle grid texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(180,170,150,0.15) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(180,170,150,0.15) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* ─── HEADER ─── */
+  header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    border-bottom: 3px solid var(--ink);
+    padding-bottom: 18px;
+    margin-bottom: 36px;
+    gap: 20px;
+  }
+
+  .header-left { flex: 1; }
+
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3.4rem);
+    font-weight: 900;
+    line-height: 1;
+    color: var(--ink);
+  }
+
+  h1 span {
+    color: var(--accent);
+  }
+
+  .header-meta {
+    text-align: right;
+    flex-shrink: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 20px;
+    align-items: start;
+  }
+
+  .meta-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 4px;
+  }
+
+  .meta-field {
+    border: none;
+    border-bottom: 1.5px solid var(--light-rule);
+    background: transparent;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--ink);
+    width: 100%;
+    padding: 4px 2px;
+    outline: none;
+    transition: border-color 0.2s;
+    display: block;
+    margin-bottom: 14px;
+  }
+  .meta-field:focus { border-color: var(--accent); }
+  .meta-field::placeholder { color: #bbb; }
+
+  /* Full-width row inside the meta grid */
+  .meta-full {
+    grid-column: span 2;
+  }
+
+  /* Group name field — larger and highlighted */
+  .meta-field-group {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    font-weight: 700;
+    border-bottom: 2px solid var(--gold);
+    color: var(--ink);
+  }
+  .meta-field-group:focus { border-color: var(--accent); }
+
+  .meta-label-group {
+    color: var(--gold);
+  }
+
+  /* ─── GRID ─── */
+  .canvas-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: auto auto;
+    gap: 14px;
+  }
+
+  /* Layout das células */
+  .card:nth-child(1) { grid-column: span 2; }
+  .card:nth-child(2) { grid-column: span 2; }
+  .card:nth-child(3) { grid-column: span 1; }
+  .card:nth-child(4) { grid-column: span 3; }
+  .card:nth-child(5) { grid-column: span 2; }
+  .card:nth-child(6) { grid-column: span 2; }
+  .card:nth-child(7) { grid-column: span 1; }
+  .card:nth-child(8) { grid-column: span 3; }
+
+  /* ─── CARD ─── */
+  .card {
+    background: var(--card-bg);
+    border: 1.5px solid var(--light-rule);
+    border-radius: 4px;
+    padding: 18px 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+    transition: box-shadow 0.2s, border-color 0.2s;
+    min-height: 160px;
+  }
+
+  .card:hover {
+    box-shadow: 4px 4px 0 var(--light-rule);
+    border-color: #b8b2a0;
+  }
+
+  .card:focus-within {
+    border-color: var(--accent);
+    box-shadow: 4px 4px 0 rgba(192,57,43,0.15);
+  }
+
+  /* Colored top bar per card */
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 3px 3px 0 0;
+  }
+
+  .card:nth-child(1)::before { background: var(--accent); }
+  .card:nth-child(2)::before { background: var(--accent2); }
+  .card:nth-child(3)::before { background: #8e44ad; }
+  .card:nth-child(4)::before { background: #16a085; }
+  .card:nth-child(5)::before { background: var(--gold); }
+  .card:nth-child(6)::before { background: #d35400; }
+  .card:nth-child(7)::before { background: #27ae60; }
+  .card:nth-child(8)::before { background: #2c3e50; }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .card-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 900;
+    line-height: 1;
+    opacity: 0.08;
+    flex-shrink: 0;
+    user-select: none;
+  }
+
+  .card-title-group { flex: 1; }
+
+  .card-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+
+  .card-subtitle {
+    font-size: 11px;
+    color: #999;
+    margin-top: 2px;
+    font-style: italic;
+    line-height: 1.3;
+  }
+
+  textarea {
+    flex: 1;
+    width: 100%;
+    min-height: 80px;
+    border: none;
+    background: transparent;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.65;
+    color: var(--ink);
+    resize: none;
+    outline: none;
+    border-bottom: 1px dashed var(--light-rule);
+    padding-bottom: 4px;
+    transition: border-color 0.2s;
+  }
+
+  textarea:focus {
+    border-bottom-color: var(--accent);
+  }
+
+  textarea::placeholder {
+    color: #c8c0ac;
+    font-style: italic;
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    margin-top: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1.5px solid var(--light-rule);
+    padding-top: 16px;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .footer-note {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: #aaa;
+    text-transform: uppercase;
+  }
+
+  .btn-print {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    padding: 10px 22px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: background 0.2s, transform 0.1s;
+  }
+
+  .btn-print:hover { background: var(--accent); }
+  .btn-print:active { transform: scale(0.97); }
+
+  /* ─── PRINT ─── */
+  @media print {
+    body { background: white; padding: 10px; }
+    body::before { display: none; }
+    .btn-print { display: none; }
+    .card { break-inside: avoid; }
+    .canvas-grid { gap: 10px; }
+    header { margin-bottom: 20px; }
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 700px) {
+    .canvas-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .card:nth-child(n) { grid-column: span 2; }
+    .card:nth-child(3),
+    .card:nth-child(7) { grid-column: span 1; }
+    header { flex-direction: column; align-items: flex-start; }
+    .header-meta { text-align: left; grid-template-columns: 1fr; width: 100%; }
+    .meta-full { grid-column: span 1; }
+    .meta-field { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+
+  <header>
+    <div class="header-left">
+      <p class="eyebrow">Ciência de Dados &amp; IA Aplicada</p>
+      <h1>Canvas —<br><span>Estrutura</span> do Projeto</h1>
+    </div>
+    <div class="header-meta">
+      <!-- Row 1: Nome do Grupo (destaque) -->
+      <div class="meta-full">
+        <p class="meta-label meta-label-group">⬡ Nome do Grupo</p>
+        <input class="meta-field meta-field-group" type="text" placeholder="Batize sua equipe…">
+      </div>
+      <!-- Row 2: Desafio escolhido -->
+      <div class="meta-full">
+        <p class="meta-label">Desafio Escolhido</p>
+        <input class="meta-field" type="text" placeholder="Título ou tema do desafio…">
+      </div>
+      <!-- Row 3: Alunos(as) + Turma/Data -->
+      <div>
+        <p class="meta-label">Alunos(as)</p>
+        <input class="meta-field" type="text" placeholder="Nomes dos integrantes…">
+      </div>
+      <div>
+        <p class="meta-label">Turma / Data</p>
+        <input class="meta-field" type="text" placeholder="Ex: DS-2025 · 24 abr">
+      </div>
+    </div>
+  </header>
+
+  <div class="canvas-grid">
+
+    <!-- 1 -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-number">1</span>
+        <div class="card-title-group">
+          <p class="card-title">Problema de Negócio</p>
+          <p class="card-subtitle">O que estamos tentando resolver? Por que isso importa?</p>
+        </div>
+      </div>
+      <textarea placeholder="Descreva o contexto do problema, o cenário organizacional e por que a solução tem valor estratégico ou operacional…"></textarea>
+    </div>
+
+    <!-- 2 -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-number">2</span>
+        <div class="card-title-group">
+          <p class="card-title">Pergunta Analítica</p>
+          <p class="card-subtitle">Qual pergunta o modelo precisa responder?</p>
+        </div>
+      </div>
+      <textarea placeholder="Ex: "Qual a probabilidade de um cliente cancelar o serviço nos próximos 30 dias?" Seja específico e mensurável…"></textarea>
+    </div>
+
+    <!-- 3 -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-number">3</span>
+        <div class="card-title-group">
+          <p class="card-title">Variável-Alvo</p>
+          <p class="card-subtitle">O que exatamente estamos prevendo / inferindo?</p>
+        </div>
+      </div>
+      <textarea placeholder="Nome da variável, tipo (binária, contínua, categórica), e como ela é definida no dataset…"></textarea>
+    </div>
+
+    <!-- 4 -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-number">4</span>
+        <div class="card-title-group">
+          <p class="card-title">Dados Disponíveis</p>
+          <p class="card-subtitle">Quais dados temos? Quais limitações existem?</p>
+        </div>
+      </div>
+      <textarea placeholder="Fontes, volume, granularidade, período coberto. Indique também vieses, dados faltantes, restrições de acesso ou questões de privacidade…"></textarea>
+    </div>
+
+    <!-- 5 -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-number">5</span>
+        <div class="card-title-group">
+          <p class="card-title">Estratégia de IA</p>
+          <p class="card-subtitle">Qual abordagem será usada? (Por quê?)</p>
+        </div>
+      </div>
+      <textarea placeholder="Tipo de aprendizado (supervisionado, não supervisionado, etc.), família de algoritmos considerados e justificativa para a escolha…"></textarea>
+    </div>
+
+    <!-- 6 -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-number">6</span>
+        <div class="card-title-group">
+          <p class="card-title">Métrica de Avaliação</p>
+          <p class="card-subtitle">Como sabemos que o modelo funciona?</p>
+        </div>
+      </div>
+      <textarea placeholder="Ex: AUC-ROC, F1-Score, RMSE, Acurácia Balanceada… Explique por que essa métrica é adequada ao problema de negócio…"></textarea>
+    </div>
+
+    <!-- 7 -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-number">7</span>
+        <div class="card-title-group">
+          <p class="card-title">Resultado Esperado</p>
+          <p class="card-subtitle">O que queremos gerar?</p>
+        </div>
+      </div>
+      <textarea placeholder="Tipo de entrega: dashboard, modelo em produção, relatório de insights, API, visualização interativa…"></textarea>
+    </div>
+
+    <!-- 8 -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-number">8</span>
+        <div class="card-title-group">
+          <p class="card-title">Impacto Esperado</p>
+          <p class="card-subtitle">Como isso ajudaria na prática?</p>
+        </div>
+      </div>
+      <textarea placeholder="Quantifique se possível: redução de custo, ganho de eficiência, melhora na experiência do usuário, redução de risco. Quem se beneficia e como?…"></textarea>
+    </div>
+
+  </div>
+
+  <footer>
+    <p class="footer-note">Canvas · Estrutura do Projeto de IA &amp; Dados</p>
+    <button class="btn-print" onclick="window.print()">⎙ Imprimir / Salvar PDF</button>
+  </footer>
+
+</div>
+
+</body>
+</html>
