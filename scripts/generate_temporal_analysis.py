@@ -117,18 +117,24 @@ def main():
         row=2, col=1
     )
     
+    # Ajuste do tamanho da fonte dos subtítulos (evita sobreposição)
+    fig.update_annotations(font_size=12)
+
     # Layout Global do Dashboard
     fig.update_layout(
         title_text="<b>Gêmeos Digitais: Dinâmica O-D Sorocaba</b><br><sup>Segmentação Temporal de Mobilidade Urbana</sup>",
         title_x=0.5,
-        height=800,
+        title_font=dict(size=16),
+        height=900,
+        autosize=True,
         showlegend=False,
         template="plotly_dark",
-        font=dict(family="Arial, sans-serif")
+        font=dict(family="Arial, sans-serif"),
+        margin=dict(l=10, r=10, t=100, b=10)
     )
     
     # Salvando em HTML
-    fig.write_html(OUTPUT_HTML)
+    fig.write_html(OUTPUT_HTML, config={'responsive': True})
     print(f"[SUCESSO] Dashboard temporal salvo em: {OUTPUT_HTML}")
 
 if __name__ == "__main__":

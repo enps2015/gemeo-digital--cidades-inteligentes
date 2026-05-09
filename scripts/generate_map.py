@@ -118,28 +118,19 @@ def main():
                     tooltip=f"<b>Corredor:</b> {orig} ➔ {dest}<br><b>Volume:</b> {peso:,} viagens<br><b>Duração Média:</b> {duracao:.1f} min"
                 ).add_to(mapa)
 
-    # Legendas HTML atualizadas para IA
-    legend_html = '''
-     <div style="position: fixed; 
-     bottom: 50px; left: 50px; width: 340px; height: auto; 
-     background-color: rgba(20, 20, 20, 0.95); z-index:9999; font-size:14px;
-     border: 1px solid #666; color: #FFF; padding: 15px; border-radius: 8px; font-family: Arial, sans-serif;">
-     <h4 style="margin-top: 0; color: #FFF;">Macro-Zonas (IA DBSCAN)</h4>
-     <p style="margin-bottom: 5px;"><i class="fa fa-circle" style="color:#FF3366"></i> Macro-Zona A (Centro/Norte)</p>
-     <p style="margin-bottom: 5px;"><i class="fa fa-circle" style="color:#33CCFF"></i> Macro-Zona B (Leste/Sul)</p>
-     <p style="margin-bottom: 5px;"><i class="fa fa-circle" style="color:#33FF33"></i> Macro-Zona C (Oeste/Industrial)</p>
-     <p style="margin-bottom: 5px;"><i class="fa fa-circle" style="color:#555555"></i> Ruído/Sensores Isolados</p>
-     <p style="font-size: 12px; color: #BBB;"><em>* Círculos maiores indicam o Centróide da Zona.</em></p>
-     <hr style="border: 0.5px solid #444;">
-     <h4 style="margin-top: 5px; margin-bottom: 5px; color: #FFF;">Fluxos Consolidados (O-D)</h4>
-     <p style="margin-bottom: 2px;">Linhas Animadas (Formigas)</p>
-     <p style="font-size: 12px; color: #BBB; margin-top: 0;"><em>* A espessura da linha indica o volume de viagens reais. A animação aponta a direção do fluxo dominante.</em></p>
-     </div>
-     '''
-    mapa.get_root().html.add_child(folium.Element(legend_html))
+    # Legendas HTML atualizadas para IA (Com Responsividade Mobile)
+    css_mobile = '''<style>
+        @media (max-width: 768px) {
+            .map-title { top: 10px !important; padding: 10px !important; width: 85% !important; }
+            .map-title h2 { font-size: 16px !important; }
+            .map-title p { font-size: 11px !important; }
+            .map-logo { display: none !important; }
+        }
+    </style>'''
+    mapa.get_root().html.add_child(folium.Element(css_mobile))
     
     title_html = '''
-     <div style="position: fixed; 
+     <div class="map-title" style="position: fixed; 
      top: 20px; left: 50%; transform: translateX(-50%); width: auto; height: auto; 
      background-color: rgba(20, 20, 20, 0.95); z-index:9999; text-align: center;
      border: 1px solid #666; padding: 15px 40px; border-radius: 8px; font-family: Arial, sans-serif;
@@ -152,7 +143,7 @@ def main():
     
     # Adicionar Logo dos Patrocinadores no Canto Inferior Direito
     logo_html = '''
-     <div style="position: fixed; 
+     <div class="map-logo" style="position: fixed; 
      bottom: 50px; right: 50px; width: auto; height: auto; 
      z-index:9999; border-radius: 8px; overflow: hidden;
      box-shadow: 0px 4px 10px rgba(0,0,0,0.5); background-color: rgba(255, 255, 255, 0.85); padding: 8px;">
