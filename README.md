@@ -108,7 +108,7 @@ python scripts/generate_map.py
 
 ## 🌐 Portfólio Interativo (MVP Web)
 Como coroamento do projeto, consolidamos os dados em uma página executiva otimizada para o **GitHub Pages**. 
-O site de portfólio (localizado no `index.html` do repositório) foi desenhado com estética *Dark/Cyber* para materializar o conceito de "Smart City". Nele, disponibilizamos:
+O site de portfólio está disponível publicamente via **[GitHub Pages (Clique Aqui)](https://enps2015.github.io/gemeo-digital--cidades-inteligentes/)** e foi desenhado com estética *Dark/Cyber* para materializar o conceito de "Smart City". Nele, disponibilizamos:
 *   As regras do nosso **Business Model Canvas** em cards interativos.
 *   **Dashboard Temporal:** Gráficos interativos renderizados em Plotly.
 *   **Mapa Interativo de Fluxo:** Mapa tático Folium desenhando fisicamente a animação de tráfego pesado operando entre os centros de massa (Macro-Zonas) definidos pela Inteligência Artificial.
