@@ -113,6 +113,17 @@ O site de portfólio (localizado no `index.html` do repositório) foi desenhado 
 *   **Dashboard Temporal:** Gráficos interativos renderizados em Plotly.
 *   **Mapa Interativo de Fluxo:** Mapa tático Folium desenhando fisicamente a animação de tráfego pesado operando entre os centros de massa (Macro-Zonas) definidos pela Inteligência Artificial.
 
+---
+
+## 🏆 Atualizações Pós-Banca (Homologação Final)
+Após a defesa bem-sucedida do projeto, realizamos um refinamento técnico profissional no repositório para cristalizar nossas entregas:
+*   **Comprovação Algorítmica (Baseline):** Criação do script `scripts/compare_models_baseline.py`, que executa o K-Means e o Agglomerative Clustering contra a nossa base. Isso provou matematicamente e geograficamente a superioridade do **DBSCAN** (escolhido originalmente) para a semântica de mobilidade viária.
+*   **Novo Relatório Analítico:** Geração do documento `docs/baseline_model_comparison.md` (e sua versão PDF), detalhando o rigor técnico da análise comparativa dos três algoritmos.
+*   **Refinamento de UX/UI (Hotsite):** Auditoria de CSS e aplicação de responsividade extrema no arquivo `index.html`. Foram aplicadas diretivas de isolamento de layout, garantindo que o painel Plotly (`2x2` no Desktop e `3x1` no celular) e o mapa dinâmico Folium sejam consumidos com perfeição visual em qualquer tela.
+*   **Atualização Documental:** Inclusão nominal de todos os membros da equipe nos relatórios em formato Markdown e geração de todas as vias consolidadas em PDF, juntamente com a apresentação de encerramento (`Apresentacao-do-desafio1-splice.pdf`).
+
+---
+
 ## 🚧 Desafios Encontrados e Soluções Adotadas
 *   **Problema (Estouro de Memória):** Notebooks congelando ao tentar ler a base raw (12GB csv).  
     *Solução:* Adoção da arquitetura *DuckDB + Parquet* em streaming.
