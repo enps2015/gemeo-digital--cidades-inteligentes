@@ -65,15 +65,16 @@ def main():
     print("Gerando painel interativo (Plotly)...")
     
     fig = make_subplots(
-        rows=2, cols=2,
-        specs=[[{"type": "bar"}, {"type": "pie"}],
-               [{"type": "scatter", "colspan": 2}, None]],
+        rows=3, cols=1,
+        specs=[[{"type": "bar"}],
+               [{"type": "pie"}],
+               [{"type": "scatter"}]],
         subplot_titles=(
             "Volume de Viagens por Faixa Horária", 
             "Proporção: Dia Útil vs Fim de Semana", 
             "Série Temporal Contínua (Densidade Hora a Hora)"
         ),
-        vertical_spacing=0.25
+        vertical_spacing=0.15
     )
     
     # Gráfico 1: Barras (Faixa Horária)
@@ -100,7 +101,7 @@ def main():
             name="Tipo de Dia",
             textinfo='label+percent'
         ),
-        row=1, col=2
+        row=2, col=1
     )
     
     # Gráfico 3: Linha (Série Temporal)
@@ -114,7 +115,7 @@ def main():
             fill='tozeroy',
             fillcolor='rgba(23, 190, 207, 0.2)'
         ),
-        row=2, col=1
+        row=3, col=1
     )
     
     # Ajuste do tamanho da fonte dos subtítulos (evita sobreposição)
@@ -125,7 +126,7 @@ def main():
         title_text="<b>Gêmeos Digitais: Dinâmica O-D Sorocaba</b><br><sup>Segmentação Temporal de Mobilidade Urbana</sup>",
         title_x=0.5,
         title_font=dict(size=16),
-        height=900,
+        height=1200,
         autosize=True,
         showlegend=False,
         template="plotly_dark",
