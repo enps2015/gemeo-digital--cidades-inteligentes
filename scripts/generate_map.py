@@ -121,6 +121,7 @@ def main():
     # Legendas HTML atualizadas para IA (Com Responsividade Mobile)
     css_mobile = '''<style>
         @media (max-width: 768px) {
+            .map-legend { display: none !important; }
             .map-title { top: 10px !important; padding: 10px !important; width: 85% !important; }
             .map-title h2 { font-size: 16px !important; }
             .map-title p { font-size: 11px !important; }
@@ -128,6 +129,25 @@ def main():
         }
     </style>'''
     mapa.get_root().html.add_child(folium.Element(css_mobile))
+
+    legend_html = '''
+     <div class="map-legend" style="position: fixed; 
+     bottom: 50px; left: 50px; width: 340px; height: auto; 
+     background-color: rgba(20, 20, 20, 0.95); z-index:9999; font-size:14px;
+     border: 1px solid #666; color: #FFF; padding: 15px; border-radius: 8px; font-family: Arial, sans-serif;">
+     <h4 style="margin-top: 0; color: #FFF;">Macro-Zonas (IA DBSCAN)</h4>
+     <p style="margin-bottom: 5px;"><i class="fa fa-circle" style="color:#FF3366"></i> Macro-Zona A (Centro/Norte)</p>
+     <p style="margin-bottom: 5px;"><i class="fa fa-circle" style="color:#33CCFF"></i> Macro-Zona B (Leste/Sul)</p>
+     <p style="margin-bottom: 5px;"><i class="fa fa-circle" style="color:#33FF33"></i> Macro-Zona C (Oeste/Industrial)</p>
+     <p style="margin-bottom: 5px;"><i class="fa fa-circle" style="color:#555555"></i> Ruído/Sensores Isolados</p>
+     <p style="font-size: 12px; color: #BBB;"><em>* Círculos maiores indicam o Centróide da Zona.</em></p>
+     <hr style="border: 0.5px solid #444;">
+     <h4 style="margin-top: 5px; margin-bottom: 5px; color: #FFF;">Fluxos Consolidados (O-D)</h4>
+     <p style="margin-bottom: 2px;">Linhas Animadas (Formigas)</p>
+     <p style="font-size: 12px; color: #BBB; margin-top: 0;"><em>* A espessura da linha indica o volume de viagens reais. A animação aponta a direção do fluxo dominante.</em></p>
+     </div>
+     '''
+    mapa.get_root().html.add_child(folium.Element(legend_html))
     
     title_html = '''
      <div class="map-title" style="position: fixed; 
