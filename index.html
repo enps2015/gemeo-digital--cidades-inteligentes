@@ -298,6 +298,12 @@
             .iframe-container { height: 60vh; }
             .hero h1 { font-size: 2.5rem; }
             nav ul { display: none; } /* Mobile simplificado */
+            .desktop-only { display: none !important; }
+            .mobile-only { display: block !important; }
+        }
+        
+        @media (min-width: 901px) {
+            .mobile-only { display: none !important; }
         }
 
         .highlight-text {
@@ -412,8 +418,11 @@
         <p style="text-align: center; margin-bottom: 20px; font-size: 1.2rem; margin-top: 50px;">
             <i class="fas fa-clock highlight-text"></i> <strong>Passo 2:</strong> Segmentação Temporal da Mobilidade Viária.
         </p>
-        <div class="iframe-container">
+        <div class="iframe-container desktop-only">
             <iframe src="docs/dashboard_temporal.html" title="Dashboard Temporal Plotly"></iframe>
+        </div>
+        <div class="iframe-container mobile-only">
+            <iframe src="docs/dashboard_temporal_mobile.html" title="Dashboard Temporal Plotly"></iframe>
         </div>
     </section>
 

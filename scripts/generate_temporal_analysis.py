@@ -60,15 +60,40 @@ def main():
     df_tempo = con.execute(query_tempo).df()
     
     # ==========================================
-    # MONTAGEM DO DASHBOARD COM PLOTLY
+    # MONTAGEM DO DASHBOARD DESKTOP (2x2)
     # ==========================================
-    print("Gerando painel interativo (Plotly)...")
+    print("Gerando painel interativo DESKTOP (Plotly)...")
+    fig_desktop = make_subplots(
+        rows=2, cols=2,
+        specs=[[{"type": "bar"}, {"type": "pie"}],
+               [{"type": "scatter", "colspan": 2}, None]],
+        subplot_titles=(
+            "Volume de Viagens por Faixa Horária", 
+            "Proporção: Dia Útil vs Fim de Semana", 
+            "Série Temporal Contínua (Densidade Hora a Hora)"
+        ),
+        vertical_spacing=0.25
+    )
     
-    fig = make_subplots(
+    fig_desktop.add_trace(go.Bar(x=df_faixa['faixa_limpa'], y=df_faixa['volume'], marker_color=['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728'], name="Faixa Horária", text=df_faixa['volume'], texttemplate='%{text:,.0f}', textposition='outside'), row=1, col=1)
+    fig_desktop.add_trace(go.Pie(labels=df_dia['tipo_dia'], values=df_dia['volume'], hole=0.4, marker_colors=['#9467bd', '#8c564b'], name="Tipo de Dia", textinfo='label+percent'), row=1, col=2)
+    fig_desktop.add_trace(go.Scatter(x=df_tempo['hora_absoluta'], y=df_tempo['volume'], mode='lines+markers', line=dict(color='#17becf', width=2), name="Fluxo Horário", fill='tozeroy', fillcolor='rgba(23, 190, 207, 0.2)'), row=2, col=1)
+    
+    fig_desktop.update_annotations(font_size=14)
+    fig_desktop.update_layout(
+        title_text="<b>Gêmeos Digitais: Dinâmica O-D Sorocaba</b><br><sup>Segmentação Temporal de Mobilidade Urbana</sup>",
+        title_x=0.5, title_font=dict(size=18), height=800, autosize=True, showlegend=False, template="plotly_dark", font=dict(family="Arial, sans-serif"), margin=dict(l=10, r=10, t=100, b=10)
+    )
+    fig_desktop.write_html(OUTPUT_HTML, config={'responsive': True})
+
+    # ==========================================
+    # MONTAGEM DO DASHBOARD MOBILE (3x1)
+    # ==========================================
+    print("Gerando painel interativo MOBILE (Plotly)...")
+    OUTPUT_HTML_MOBILE = "docs/dashboard_temporal_mobile.html"
+    fig_mobile = make_subplots(
         rows=3, cols=1,
-        specs=[[{"type": "bar"}],
-               [{"type": "pie"}],
-               [{"type": "scatter"}]],
+        specs=[[{"type": "bar"}], [{"type": "pie"}], [{"type": "scatter"}]],
         subplot_titles=(
             "Volume de Viagens por Faixa Horária", 
             "Proporção: Dia Útil vs Fim de Semana", 
@@ -77,66 +102,18 @@ def main():
         vertical_spacing=0.15
     )
     
-    # Gráfico 1: Barras (Faixa Horária)
-    fig.add_trace(
-        go.Bar(
-            x=df_faixa['faixa_limpa'], 
-            y=df_faixa['volume'],
-            marker_color=['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728'],
-            name="Faixa Horária",
-            text=df_faixa['volume'],
-            texttemplate='%{text:,.0f}',
-            textposition='outside'
-        ),
-        row=1, col=1
-    )
+    fig_mobile.add_trace(go.Bar(x=df_faixa['faixa_limpa'], y=df_faixa['volume'], marker_color=['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728'], name="Faixa Horária", text=df_faixa['volume'], texttemplate='%{text:,.0f}', textposition='outside'), row=1, col=1)
+    fig_mobile.add_trace(go.Pie(labels=df_dia['tipo_dia'], values=df_dia['volume'], hole=0.4, marker_colors=['#9467bd', '#8c564b'], name="Tipo de Dia", textinfo='label+percent'), row=2, col=1)
+    fig_mobile.add_trace(go.Scatter(x=df_tempo['hora_absoluta'], y=df_tempo['volume'], mode='lines+markers', line=dict(color='#17becf', width=2), name="Fluxo Horário", fill='tozeroy', fillcolor='rgba(23, 190, 207, 0.2)'), row=3, col=1)
     
-    # Gráfico 2: Donut (Dia Útil vs FDS)
-    fig.add_trace(
-        go.Pie(
-            labels=df_dia['tipo_dia'], 
-            values=df_dia['volume'],
-            hole=0.4,
-            marker_colors=['#9467bd', '#8c564b'],
-            name="Tipo de Dia",
-            textinfo='label+percent'
-        ),
-        row=2, col=1
-    )
-    
-    # Gráfico 3: Linha (Série Temporal)
-    fig.add_trace(
-        go.Scatter(
-            x=df_tempo['hora_absoluta'], 
-            y=df_tempo['volume'],
-            mode='lines+markers',
-            line=dict(color='#17becf', width=2),
-            name="Fluxo Horário",
-            fill='tozeroy',
-            fillcolor='rgba(23, 190, 207, 0.2)'
-        ),
-        row=3, col=1
-    )
-    
-    # Ajuste do tamanho da fonte dos subtítulos (evita sobreposição)
-    fig.update_annotations(font_size=12)
-
-    # Layout Global do Dashboard
-    fig.update_layout(
+    fig_mobile.update_annotations(font_size=12)
+    fig_mobile.update_layout(
         title_text="<b>Gêmeos Digitais: Dinâmica O-D Sorocaba</b><br><sup>Segmentação Temporal de Mobilidade Urbana</sup>",
-        title_x=0.5,
-        title_font=dict(size=16),
-        height=1200,
-        autosize=True,
-        showlegend=False,
-        template="plotly_dark",
-        font=dict(family="Arial, sans-serif"),
-        margin=dict(l=10, r=10, t=100, b=10)
+        title_x=0.5, title_font=dict(size=14), height=1200, autosize=True, showlegend=False, template="plotly_dark", font=dict(family="Arial, sans-serif"), margin=dict(l=10, r=10, t=80, b=10)
     )
+    fig_mobile.write_html(OUTPUT_HTML_MOBILE, config={'responsive': True})
     
-    # Salvando em HTML
-    fig.write_html(OUTPUT_HTML, config={'responsive': True})
-    print(f"[SUCESSO] Dashboard temporal salvo em: {OUTPUT_HTML}")
+    print(f"[SUCESSO] Dashboards salvos em: {OUTPUT_HTML} e {OUTPUT_HTML_MOBILE}")
 
 if __name__ == "__main__":
     main()
