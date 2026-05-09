@@ -34,3 +34,14 @@ Em cenários reais de Cidades Inteligentes, dados de radares ANPR (*Automatic Nu
 A infraestrutura analítica do grupo encontra-se em um nível de excelência profissional, alinhando-se aos cenários reais de Governança de Dados no Setor Público. O projeto é imune a críticas metodológicas de estruturação.
 
 A equipe está totalmente autorizada e capacitada a ingressar na fase final do MVP: **A implementação da IA Não-Supervisionada (Clusterização Espacial)** para agrupar as coordenadas dessas milhões de viagens e projetar o Mapa de Calor Estratégico de Sorocaba.
+
+---
+## Equipe: Pearsonianos - Desafio 1 Splice
+* Binha Ferraz Dauma
+* Ednardo Pinheiro Peixoto
+* Eric Pimentel
+* Luis Felipe Ferreira
+* Carlos Delfino
+* Dennis Giancarlo
+* Ana Temoteo
+* Adriano José

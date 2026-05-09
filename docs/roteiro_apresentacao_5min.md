@@ -51,3 +51,14 @@ O restante do documento traz o treinamento para a sua equipe blindar as resposta
 
 **Pergunta 4 (Professor): O Silhouette Score do modelo de vocês deu um valor de 0.31. Em ML, sabemos que valores mais altos são melhores. O de vocês é suficiente?**
 *   **Resposta Tática (Equipe):** *"Num contexto físico de mobilidade caótica no mundo real, um score de 0.3134 é extremamente satisfatório e válido. Como a métrica vai de -1 a 1, pontuar acima de zero já garante que a coesão interna das Macro-Zonas supera as distâncias entre elas. Significa que nosso DBSCAN obteve fronteiras sólidas entre as zonas da cidade sem superposição caótica."*
+
+---
+## Equipe: Pearsonianos - Desafio 1 Splice
+* Binha Ferraz Dauma
+* Ednardo Pinheiro Peixoto
+* Eric Pimentel
+* Luis Felipe Ferreira
+* Carlos Delfino
+* Dennis Giancarlo
+* Ana Temoteo
+* Adriano José

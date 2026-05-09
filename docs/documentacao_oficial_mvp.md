@@ -61,3 +61,14 @@ Nossa entrega de Produto Mínimo Viável (Sábado) não será apenas um notebook
     *   Utilizando bibliotecas como `Folium` ou `Kepler.gl`, apresentaremos o mapa de Sorocaba plotado com as verdadeiras "Zonas de Calor" reveladas pelo algoritmo de Clusterização.
     *   Haverá distinção visual clara entre as Zonas de **Alta Origem** (Pólos residenciais matinais) e Zonas de **Alto Destino** (Pólos comerciais/industriais).
     *   **Insights Acionáveis:** A apresentação culminará na demonstração de 2 ou 3 grandes fluxos anômalos ou hiper-densos descobertos pela IA, servindo de base teórica imediata para o redirecionamento de linhas de ônibus urbanos.
+
+---
+## Equipe: Pearsonianos - Desafio 1 Splice
+* Binha Ferraz Dauma
+* Ednardo Pinheiro Peixoto
+* Eric Pimentel
+* Luis Felipe Ferreira
+* Carlos Delfino
+* Dennis Giancarlo
+* Ana Temoteo
+* Adriano José

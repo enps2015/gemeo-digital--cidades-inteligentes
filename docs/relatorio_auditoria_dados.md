@@ -77,3 +77,14 @@ Com as anomalias diagnosticadas, a base crua foi submetida a um pipeline sequenc
 - **Ação:** Aplicação da Heurística de **Janela de Inatividade de 45 minutos** (*Trip Sessions*) sobre a base Bronze, extraindo a primeira semana de Janeiro como prova de conceito.
 - **Transformações:** Funções de Janela (*Window Functions*) calcularam o *delta* temporal de cada veículo, demarcaram o fim de cada viagem e extraíram a latitude e longitude exatas da Origem e do Destino.
 - **Resultado:** Geração da Matriz Origem-Destino `data/02_silver/matriz_od_amostra_1semana.parquet`, contendo **2.143.327 de viagens reais** com duração média de 6.3 minutos, estruturando o caos de pontos assíncronos na verdadeira base de Machine Learning.
+
+---
+## Equipe: Pearsonianos - Desafio 1 Splice
+* Binha Ferraz Dauma
+* Ednardo Pinheiro Peixoto
+* Eric Pimentel
+* Luis Felipe Ferreira
+* Carlos Delfino
+* Dennis Giancarlo
+* Ana Temoteo
+* Adriano José

@@ -128,3 +128,14 @@ O site de portfólio (localizado no `index.html` do repositório) foi desenhado 
 
 ---
 > *Desenvolvido para o módulo final da Residência em Gêmeo Digital em 5G (Facens) - Ano 2026*
+
+---
+## Equipe: Pearsonianos - Desafio 1 Splice
+* Binha Ferraz Dauma
+* Ednardo Pinheiro Peixoto
+* Eric Pimentel
+* Luis Felipe Ferreira
+* Carlos Delfino
+* Dennis Giancarlo
+* Ana Temoteo
+* Adriano José

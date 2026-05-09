@@ -31,3 +31,14 @@ A arquitetura Big Data / Lote de Sorocaba está homologada.
 
 ---
 *Relatório de benchmark e rastreabilidade automatizado gerado em 2026-05-09 11:21:43*
+
+---
+## Equipe: Pearsonianos - Desafio 1 Splice
+* Binha Ferraz Dauma
+* Ednardo Pinheiro Peixoto
+* Eric Pimentel
+* Luis Felipe Ferreira
+* Carlos Delfino
+* Dennis Giancarlo
+* Ana Temoteo
+* Adriano José

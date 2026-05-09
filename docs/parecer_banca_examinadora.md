@@ -43,3 +43,14 @@ Vocês escaparam da armadilha do "Data Science de tutorial" e entregaram uma inf
 O sistema está rápido, modular, documentado e livre de falhas estruturais. 
 
 Estão prontos.
+
+---
+## Equipe: Pearsonianos - Desafio 1 Splice
+* Binha Ferraz Dauma
+* Ednardo Pinheiro Peixoto
+* Eric Pimentel
+* Luis Felipe Ferreira
+* Carlos Delfino
+* Dennis Giancarlo
+* Ana Temoteo
+* Adriano José
