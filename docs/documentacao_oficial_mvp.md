@@ -1,6 +1,8 @@
 # Documentação Executiva do Projeto: Inferência de Fluxos Origem-Destino com IA
 **Projeto:** Gêmeos Digitais TIC51 | **Desafio 1:** Mobilidade Urbana em Sorocaba-SP  
 
+> **Aviso:** Documento histórico da entrega de banca. Mantido para rastreabilidade. Algumas formulações foram refinadas posteriormente no README e no relatório baseline.
+
 ---
 
 ## 1. Problema de Negócio e Contexto

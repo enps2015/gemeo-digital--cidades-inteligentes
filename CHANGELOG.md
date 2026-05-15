@@ -24,6 +24,12 @@ Nenhuma alteração nesta seção existia na versão entregue à banca.
 - README: seção "Privacidade e Tratamento de Dados"
 - README: seção "Limitações Conhecidas"
 - README: seção "Versão de banca vs. refinamento pós-banca"
+- `requirements.txt` para ambiente virtual controlável
+- Guia oficial de reprodutibilidade (`docs/reprodutibilidade.md`)
+- Diretório `data_sample/` isolado para prevenção de perda de dados originais
+- Gerador de dados sintéticos para smoke test (`scripts/generate_demo_data.py`)
+- Exportação local dinâmica de estatísticas em `data/stats.js`
+- Hotsite (`index.html`) dinâmico reagindo ativamente à base de dados processada
 
 ---
 
