@@ -44,8 +44,10 @@ Esta lógica estruturada extraiu **2.1 milhões de viagens contínuas puras** (c
 
 ## 5. Estratégia de Inteligência Artificial (Machine Learning)
 1. **Passo 1 - Engenharia de Features (Heurística):** O pipeline em DuckDB calculou o Delta de Tempo (*Window Functions*) para extrair as matrizes O-D em frações de segundos.
-2. **Passo 2 - IA Não-Supervisionada (Clusterização Espacial):** Com as coordenadas de Origem e Destino geradas, a inteligência da solução aplica o **DBSCAN** (Density-Based Spatial Clustering of Applications with Noise) ou **K-Means Espacial**. 
-   * *O Porquê Técnico:* 2.1 milhões de rotas puras não geram decisão de negócio. O algoritmo de ML agrupará pontos de paradas muito próximos, fundindo-os em macro **Zonas de Densidade**. Ele varre o mapa identificando onde há aglomeração matemática de partidas e chegadas.
+2. **Passo 2 - IA Não-Supervisionada (Clusterização Espacial):** Com as coordenadas de Origem e Destino geradas, aplica-se o **DBSCAN** (Density-Based Spatial Clustering of Applications with Noise) com distância Haversine (`eps=2.0 km`, `min_samples=2`). A escolha pelo DBSCAN — em detrimento de K-Means ou Agglomerative Clustering — é documentada no comparativo baseline¹.
+   * *Justificativa Técnica:* 2.1 milhões de rotas individuais não são acionáveis para gestão pública. O DBSCAN agrupa coordenadas fisicamente próximas em **Macro-Zonas de Densidade**, identificando onde há concentração de partidas e chegadas.
+
+> ¹ Ver `docs/baseline_model_comparison.md` para o comparativo quantitativo entre DBSCAN, K-Means e Agglomerative Clustering.
 
 ## 6. Métricas Oficiais de Avaliação Adotadas
 Dado o caráter Não-Supervisionado (Clusterização) do projeto, descartamos formalmente métricas de classificação categórica (como F1-Score ou AUC-ROC) e adotaremos as seguintes métricas científicas:
