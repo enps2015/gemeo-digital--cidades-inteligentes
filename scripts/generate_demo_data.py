@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 # Este script gera dados FICTÍCIOS que simulam a estrutura do banco original de 5GB.
 # O único propósito é permitir que avaliadores rodem o pipeline (audit, bronze,
 # silver, gold) sem necessitar dos dados reais sensíveis.
-# Os dados geográficos e os hashes de veículos gerados aqui NÃO são reais e
+# Os dados geográficos e os identificadores fictícios de veículos gerados aqui NÃO são reais e
 # não refletem a mobilidade urbana da cidade.
 # ==============================================================================
 

@@ -116,8 +116,8 @@ python -m venv .venv
 source .venv/bin/activate  # No Linux/Mac
 .venv\Scripts\activate     # No Windows
 
-# Instale as bibliotecas principais
-pip install duckdb pandas scikit-learn plotly folium numpy tabulate
+# Instale as dependências do projeto
+pip install -r requirements.txt
 ```
 
 _Baixe a pasta `data/` do Google Drive e insira na raiz antes de prosseguir._
@@ -172,7 +172,7 @@ Os resultados do projeto estão consolidados em uma página web publicada via **
 3. **Heurística de 45 minutos sem calibração local:** O threshold de inatividade foi adotado com base em literatura de mobilidade urbana, mas não foi calibrado empiricamente para o contexto específico de Sorocaba. Não há análise de sensibilidade comparando outros valores.
 4. **Silhouette Score moderado:** O valor de 0.3134 indica separação moderada entre clusters. É um resultado típico para dados geoespaciais urbanos onde as fronteiras entre zonas são naturalmente difusas — não é indicativo de falha, mas também não constitui evidência de excelência.
 5. **DBSCAN com Ruídos = 0:** Com os parâmetros adotados (`eps=2.0 km`, `min_samples=2`), todos os 61 sensores foram absorvidos em clusters. A capacidade de isolamento de ruído do DBSCAN — uma de suas vantagens teóricas — não foi exercida nesta configuração.
-6. **Sem `requirements.txt`:** As dependências ainda não estão travadas com versões exatas.
+6. **Reprodutibilidade parcial:** o projeto já possui requirements.txt e smoke test sintético, mas a reprodução completa dos resultados oficiais ainda depende do download externo da base original.
 7. **Sem testes automatizados:** O pipeline não possui suite de testes.
 8. **Dependência de dados externos:** A execução completa do pipeline depende do download da base de dados via Google Drive.
 

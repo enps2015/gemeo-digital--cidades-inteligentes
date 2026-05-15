@@ -32,7 +32,7 @@ pip install -r requirements.txt
 ```
 
 ### Passo 2.2: Gerar os Dados Sintéticos
-Execute o script gerador. Ele criará o diretório `data/00_raw` (se não existir) e depositará o arquivo Parquet fictício no local esperado pelos scripts principais.
+Execute o script gerador. O script cria `data_sample/00_raw`; para executar os scripts originais, o arquivo sintético deve ser copiado para `data/00_raw`.
 
 ```bash
 python scripts/generate_demo_data.py
