@@ -6,7 +6,7 @@ Este guia foi elaborado para recrutadores, avaliadores técnicos e professores q
 
 ## 1. O que é o Smoke Test?
 
-Criamos um script gerador de dados **totalmente sintéticos e fictícios**. Ele recria a estrutura exata e os tipos de dados das tabelas originais da Camada Raw. As coordenadas geográficas são geradas em torno de Sorocaba-SP para que o modelo espacial funcione mecanicamente. 
+Criamos um script gerador de dados **totalmente sintéticos e fictícios**. Ele recria a estrutura mínima compatível com os scripts principais e os tipos de dados das tabelas originais da Camada Raw. As coordenadas geográficas são geradas aleatoriamente em torno de Sorocaba-SP apenas para que o modelo espacial funcione mecanicamente. Nenhum comportamento real de mobilidade urbana é simulado.
 
 > **Aviso:** Os gráficos gerados ao final, as volumetrias e as zonas identificadas pelo algoritmo DBSCAN **não terão valor analítico real**. O único objetivo deste teste é demonstrar que as engrenagens de código (DuckDB, ETL, e scikit-learn) executam sem erros.
 
@@ -40,6 +40,14 @@ python scripts/generate_demo_data.py
 *(O script contém proteções e emitirá um aviso pedindo confirmação caso você já possua um arquivo grande de dados reais nessa pasta, para evitar exclusão acidental).*
 
 ### Passo 2.3: Executar o Pipeline de Ponta a Ponta
+Como os scripts principais (originais do projeto) estão programados para ler a pasta `data/`, você precisará copiar o arquivo gerado para o diretório correto:
+
+```bash
+mkdir -p data/00_raw
+cp data_sample/00_raw/DADOS_SOROCABA_JANEIRO_A_ABRIL_2026.parquet data/00_raw/
+```
+*(Se você já possui a base original de 5GB baixada, renomeie-a temporariamente para evitar sobrescrevê-la).*
+
 Agora, execute as camadas do pipeline na ordem cronológica:
 
 ```bash

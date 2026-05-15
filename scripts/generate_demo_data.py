@@ -16,7 +16,7 @@ from datetime import datetime, timedelta
 # não refletem a mobilidade urbana da cidade.
 # ==============================================================================
 
-RAW_DIR = "data/00_raw"
+RAW_DIR = "data_sample/00_raw"
 TARGET_FILE = os.path.join(RAW_DIR, "DADOS_SOROCABA_JANEIRO_A_ABRIL_2026.parquet")
 NUM_RECORDS = 50000
 
@@ -71,9 +71,9 @@ def generate_data():
             'Longitude': lon_str
         })
         
-    # 2. Gerar veículos (placas anonimizadas em hash)
+    # 2. Gerar identificadores fictícios de veículos para smoke test
     num_vehicles = 500
-    vehicles = [uuid.uuid4().hex for _ in range(num_vehicles)]
+    vehicles = [f"veh_demo_{i:04d}_{uuid.uuid4().hex}" for i in range(num_vehicles)]
     
     # 3. Gerar passagens (pings)
     # Simulando viagens: um veículo passa por vários sensores em sequência
@@ -130,7 +130,8 @@ def generate_data():
     
     size_mb = os.path.getsize(TARGET_FILE) / (1024 * 1024)
     print(f"[SUCESSO] Base fictícia gerada: {TARGET_FILE} ({size_mb:.2f} MB).")
-    print("\nVocê já pode rodar as camadas do pipeline: audit, bronze, silver, gold.")
+    print("\nPara rodar os scripts originais, copie este arquivo para 'data/00_raw/'.")
+    print("⚠️ CUIDADO: Renomeie sua base real de 5GB antes de copiar para não sobrescrevê-la!")
 
 if __name__ == "__main__":
     print_warning()
