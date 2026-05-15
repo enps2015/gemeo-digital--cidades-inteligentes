@@ -2,8 +2,8 @@
   <img src="img/smat_cities01.png" alt="Cidades Inteligentes" width="100%">
 </div>
 
-# Gêmeos Digitais: Inferência de Fluxos Origem-Destino com IA
-**Desafio Final:** IA Aplicada a Problemas Reais (Mobilidade Urbana)  
+# Inferência de Fluxos Origem-Destino para um MVP de Gêmeo Digital Urbano
+**Desafio da Etapa de IA Aplicada:** Mobilidade Urbana (Sorocaba-SP)  
 **Residência em Gêmeo Digital em 5G** — Facens
 
 <div align="center">
@@ -40,7 +40,7 @@ As diferenças entre as versões estão registradas no [`CHANGELOG.md`](CHANGELO
 ## 🎯 Objetivo do Projeto
 Gestores públicos de mobilidade necessitam de dados estruturados para decisões de alocação de infraestrutura. O desafio técnico deste projeto foi **inferir padrões de fluxo Origem-Destino (O-D)** na cidade de Sorocaba-SP, a partir de uma malha de 61 sensores de tráfego que não fornecia rótulos explícitos de viagem.
 
-O pipeline transforma 76 milhões de registros (pings de sensores) em uma Matriz O-D agregada por Macro-Zonas, utilizável como insumo para planejamento de transporte público.
+O pipeline transforma 76 milhões de registros (pings de sensores) em uma Matriz O-D agregada por Macro-Zonas, utilizável como insumo para planejamento de mobilidade urbana, análise de corredores viários e apoio à tomada de decisão pública.
 
 ---
 
@@ -78,10 +78,10 @@ Para executar os scripts localmente, faça o download e coloque o conteúdo na p
 O processamento utiliza DuckDB para leitura out-of-core e Parquet para armazenamento colunar comprimido, permitindo processar os 76M de registros sem estouro de memória.
 
 O pipeline flui por 4 camadas:
-1.  **Camada Raw (`00_raw`):** Arquivos CSV originais dos sensores IoT.
+1.  **Camada Raw (`00_raw`):** Dados brutos dos sensores IoT, originalmente disponibilizados em CSV e convertidos para Parquet na ingestão inicial para processamento eficiente com DuckDB.
 2.  **Camada Bronze (`01_bronze` — `clean_bronze.py`):** Ingestão, correção de separadores decimais (vírgulas → pontos) e conversão de strings de data para `TIMESTAMP`.
-3.  **Camada Silver (`02_silver` — `trip_segmentation.py`):** Segmentação de viagens via Window Functions. Aplica-se uma **janela de inatividade de 45 minutos**: se um veículo desaparece dos sensores por mais de 45 min, a viagem é encerrada. Esse threshold foi adotado com base em referências de mobilidade urbana, mas **não foi calibrado empiricamente para Sorocaba** (ver [Limitações](#-limitações-conhecidas)). Resultado: ~2.1 milhões de viagens na 1ª semana de janeiro.
-4.  **Camada Gold (`03_gold` — `spatial_clustering_ia.py`):** Clusterização DBSCAN (`eps=2.0 km`, `min_samples=2`, métrica Haversine) sobre coordenadas O-D. Formou **3 Macro-Zonas** com Silhouette Score de 0.3134 (separação moderada). Detalhes no [comparativo baseline](docs/baseline_model_comparison.md).
+3.  **Camada Silver (`02_silver` — `trip_segmentation.py`):** Segmentação de viagens via Window Functions. Aplica-se uma **janela de inatividade de 45 minutos**: se um veículo desaparece dos sensores por mais de 45 min, a viagem é encerrada. Esse threshold foi adotado como heurística operacional inicial e **ainda não foi calibrado empiricamente para Sorocaba** (ver [Limitações](#-limitações-conhecidas)). Resultado: ~2.1 milhões de viagens na 1ª semana de janeiro.
+4.  **Camada Gold (`03_gold` — `spatial_clustering_ia.py`):** Clusterização DBSCAN (`eps=2.0 km`, `min_samples=2`, métrica Haversine) aplicada sobre as **coordenadas geográficas dos 61 sensores físicos**. O algoritmo formou **3 Macro-Zonas** (Silhouette Score 0.3134 — separação moderada). Os pares O-D extraídos na camada Silver são então **agregados por Macro-Zona**, gerando a Matriz O-D final entre corredores. Detalhes no [comparativo baseline](docs/baseline_model_comparison.md).
 
 ---
 
@@ -135,9 +135,11 @@ Os resultados do projeto estão consolidados em uma página web publicada via **
 
 ## 🔒 Privacidade e Tratamento de Dados
 
-- O campo `Placa` no dataset original contém hashes de comprimento fixo, conforme recebido no dataset fornecido pelo órgão responsável. O pipeline não executa nenhum processo de anonimização adicional — os dados já chegam pseudonimizados.
-- O pipeline não armazena nem processa dados pessoais identificáveis (PII) em nenhuma camada. As camadas Silver e Gold operam exclusivamente sobre coordenadas geográficas agregadas.
-- Este projeto **não declara conformidade com a LGPD**, pois tal afirmação requer parecer jurídico formal que não foi obtido.
+- O campo `Placa` foi recebido como identificador pseudonimizado (hash de comprimento fixo), conforme disponibilizado pelo órgão fornecedor da base. O pipeline não executa nenhum processo de anonimização adicional.
+- Na camada Silver, esse identificador é utilizado exclusivamente para reconstrução temporal das trajetórias (segmentação de viagens por veículo). Ele não é exposto em nenhuma saída pública.
+- As visualizações públicas (dashboard, mapa, hotsite) operam exclusivamente com dados agregados por sensor, Macro-Zona e corredor — sem granularidade individual de veículo.
+- O projeto **não tenta reidentificar indivíduos** a partir dos hashes nem cruza dados com bases externas.
+- Este projeto **não declara conformidade plena com a LGPD**, pois tal afirmação requer parecer jurídico formal que não foi obtido.
 
 ---
 
