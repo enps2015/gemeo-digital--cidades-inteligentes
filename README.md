@@ -3,7 +3,8 @@
 </div>
 
 # Inferência de Fluxos Origem-Destino para um MVP de Gêmeo Digital Urbano
-**Desafio da Etapa de IA Aplicada:** Mobilidade Urbana (Sorocaba-SP)  
+
+**Desafio da Etapa de IA Aplicada:** Mobilidade Urbana (Sorocaba-SP)
 **Residência em Gêmeo Digital em 5G** — Facens
 
 <div align="center">
@@ -17,8 +18,9 @@
 <br>
 
 ## 👥 Equipe: Pearsonianos (Desafio 1 Splice)
-*   **Binha Ferraz Dauma** | **Ednardo Pinheiro Peixoto** | **Eric Pimentel** | **Luis Felipe Ferreira**
-*   **Carlos Delfino** | **Dennis Giancarlo** | **Ana Temoteo** | **Adriano José**
+
+- **Binha Ferraz Dauma** | **Ednardo Pinheiro Peixoto** | **Eric Pimentel** | **Luis Felipe Ferreira**
+- **Carlos Delfino** | **Dennis Giancarlo** | **Ana Temoteo** | **Adriano José**
 
 ---
 
@@ -26,9 +28,9 @@
 
 Este repositório contém duas versões documentadas:
 
-| Versão | Tag / Branch | Data | Descrição |
-|--------|-------------|------|-----------|
-| **Entrega de banca** | Tag `v1-banca-ia-aplicada` | 09/05/2026 | Versão integral defendida na banca da Residência. Preservada como marco histórico imutável. |
+| Versão                    | Tag / Branch                       | Data                   | Descrição                                                                                                              |
+| ------------------------- | ---------------------------------- | ---------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| **Entrega de banca**      | Tag `v1-banca-ia-aplicada`         | 09/05/2026             | Versão integral defendida na banca da Residência. Preservada como marco histórico imutável.                            |
 | **Refinamento pós-banca** | Branch `v2-pos-banca-profissional` | A partir de 15/05/2026 | Correções documentais, adição de limitações e melhorias de reprodutibilidade. Nenhuma alteração de lógica nos modelos. |
 
 Para acessar a versão exata da banca: `git checkout v1-banca-ia-aplicada`
@@ -38,6 +40,7 @@ As diferenças entre as versões estão registradas no [`CHANGELOG.md`](CHANGELO
 ---
 
 ## 🎯 Objetivo do Projeto
+
 Gestores públicos de mobilidade necessitam de dados estruturados para decisões de alocação de infraestrutura. O desafio técnico deste projeto foi **inferir padrões de fluxo Origem-Destino (O-D)** na cidade de Sorocaba-SP, a partir de uma malha de 61 sensores de tráfego que não fornecia rótulos explícitos de viagem.
 
 O pipeline transforma 76 milhões de registros (pings de sensores) em uma Matriz O-D agregada por Macro-Zonas, utilizável como insumo para planejamento de mobilidade urbana, análise de corredores viários e apoio à tomada de decisão pública.
@@ -45,8 +48,9 @@ O pipeline transforma 76 milhões de registros (pings de sensores) em uma Matriz
 ---
 
 ## 💾 Acesso à Base de Dados (Google Drive)
-Os dados originais não estão hospedados neste repositório devido ao seu volume (> 5GB). 
-A base de dados que compõe as pastas `data/00_raw` até `data/03_gold` está [**disponível neste link do Google Drive**](https://drive.google.com/drive/folders/1Gw9GFrNwx6wabkjHKkRqk0U1aJmJ-wy5?usp=drive_link). 
+
+Os dados originais não estão hospedados neste repositório devido ao seu volume (> 5GB).
+A base de dados que compõe as pastas `data/00_raw` até `data/03_gold` está [**disponível neste link do Google Drive**](https://drive.google.com/drive/folders/1Gw9GFrNwx6wabkjHKkRqk0U1aJmJ-wy5?usp=drive_link).
 Para executar os scripts localmente, faça o download e coloque o conteúdo na pasta `data/` na raiz do projeto.
 
 ---
@@ -75,19 +79,22 @@ Para executar os scripts localmente, faça o download e coloque o conteúdo na p
 ---
 
 ## ⚙️ Pipeline de Dados (ETL)
+
 O processamento utiliza DuckDB para leitura out-of-core e Parquet para armazenamento colunar comprimido, permitindo processar os 76M de registros sem estouro de memória.
 
 O pipeline flui por 4 camadas:
-1.  **Camada Raw (`00_raw`):** Dados brutos dos sensores IoT, originalmente disponibilizados em CSV e convertidos para Parquet na ingestão inicial para processamento eficiente com DuckDB.
-2.  **Camada Bronze (`01_bronze` — `clean_bronze.py`):** Ingestão, correção de separadores decimais (vírgulas → pontos) e conversão de strings de data para `TIMESTAMP`.
-3.  **Camada Silver (`02_silver` — `trip_segmentation.py`):** Segmentação de viagens via Window Functions. Aplica-se uma **janela de inatividade de 45 minutos**: se um veículo desaparece dos sensores por mais de 45 min, a viagem é encerrada. Esse threshold foi adotado como heurística operacional inicial e **ainda não foi calibrado empiricamente para Sorocaba** (ver [Limitações](#-limitações-conhecidas)). Resultado: ~2.1 milhões de viagens na 1ª semana de janeiro.
-4.  **Camada Gold (`03_gold` — `spatial_clustering_ia.py`):** Clusterização DBSCAN (`eps=2.0 km`, `min_samples=2`, métrica Haversine) aplicada sobre as **coordenadas geográficas dos 61 sensores físicos**. O algoritmo formou **3 Macro-Zonas** (Silhouette Score 0.3134 — separação moderada). Os pares O-D extraídos na camada Silver são então **agregados por Macro-Zona**, gerando a Matriz O-D final entre corredores. Detalhes no [comparativo baseline](docs/baseline_model_comparison.md).
+
+1. **Camada Raw (`00_raw`):** Dados brutos dos sensores IoT, originalmente disponibilizados em CSV e convertidos para Parquet na ingestão inicial para processamento eficiente com DuckDB.
+2. **Camada Bronze (`01_bronze` — `clean_bronze.py`):** Ingestão, correção de separadores decimais (vírgulas → pontos) e conversão de strings de data para `TIMESTAMP`.
+3. **Camada Silver (`02_silver` — `trip_segmentation.py`):** Segmentação de viagens via Window Functions. Aplica-se uma **janela de inatividade de 45 minutos**: se um veículo desaparece dos sensores por mais de 45 min, a viagem é encerrada. Esse threshold foi adotado como heurística operacional inicial e **ainda não foi calibrado empiricamente para Sorocaba** (ver [Limitações](#-limitações-conhecidas)). Resultado: ~2.1 milhões de viagens na 1ª semana de janeiro.
+4. **Camada Gold (`03_gold` — `spatial_clustering_ia.py`):** Clusterização DBSCAN (`eps=2.0 km`, `min_samples=2`, métrica Haversine) aplicada sobre as **coordenadas geográficas dos 61 sensores físicos**. O algoritmo formou **3 Macro-Zonas** (Silhouette Score 0.3134 — separação moderada). Os pares O-D extraídos na camada Silver são então **agregados por Macro-Zona**, gerando a Matriz O-D final entre corredores. Detalhes no [comparativo baseline](docs/baseline_model_comparison.md).
 
 ---
 
 ## 🖥️ Como Executar o Projeto Localmente
 
 **1. Instalação e Preparação:**
+
 ```bash
 # Clone este repositório
 git clone https://github.com/enps2015/gemeo-digital--cidades-inteligentes.git
@@ -101,9 +108,11 @@ source .venv/bin/activate  # No Linux/Mac
 # Instale as bibliotecas principais
 pip install duckdb pandas scikit-learn plotly folium numpy tabulate
 ```
-*Baixe a pasta `data/` do Google Drive e insira na raiz antes de prosseguir.*
+
+_Baixe a pasta `data/` do Google Drive e insira na raiz antes de prosseguir._
 
 **2. Ordem de Execução do Pipeline:**
+
 ```bash
 # 1. Auditoria e Limpeza (opcional se já baixou os Parquets prontos)
 python scripts/audit_data.py
@@ -126,10 +135,12 @@ python scripts/compare_models_baseline.py
 ---
 
 ## 🌐 Portfólio Interativo (GitHub Pages)
+
 Os resultados do projeto estão consolidados em uma página web publicada via **[GitHub Pages](https://enps2015.github.io/gemeo-digital--cidades-inteligentes/)**. A página disponibiliza:
-*   Cards com o **Business Model Canvas** do projeto.
-*   **Dashboard Temporal:** gráficos interativos Plotly com a distribuição horária e diária dos fluxos.
-*   **Mapa Interativo de Fluxo:** mapa Folium com representação visual dos corredores entre as Macro-Zonas identificadas pelo DBSCAN.
+
+- Cards com o **Business Model Canvas** do projeto.
+- **Dashboard Temporal:** gráficos interativos Plotly com a distribuição horária e diária dos fluxos.
+- **Mapa Interativo de Fluxo:** mapa Folium com representação visual dos corredores entre as Macro-Zonas identificadas pelo DBSCAN.
 
 ---
 
@@ -157,16 +168,19 @@ Os resultados do projeto estão consolidados em uma página web publicada via **
 ---
 
 ## 🚧 Desafios Técnicos e Soluções Adotadas
-*   **Estouro de memória:** Notebooks não suportavam a base raw (~12GB CSV). Solução: arquitetura DuckDB + Parquet em processamento out-of-core.
-*   **Ausência de variável-alvo:** Nenhuma coluna indicava destino dos veículos. Solução: heurística de segmentação espaço-temporal (janela de 45 min de inatividade).
-*   **Divergência na documentação do edital:** O edital citava 50 sensores, mas a base continha 61 equipamentos distintos. Solução: script de profiling (`audit_data.py`) com validação cruzada (`COUNT(DISTINCT NSerie)` + agrupamento volumétrico).
+
+- **Estouro de memória:** Notebooks não suportavam a base raw (~12GB CSV). Solução: arquitetura DuckDB + Parquet em processamento out-of-core.
+- **Ausência de variável-alvo:** Nenhuma coluna indicava destino dos veículos. Solução: heurística de segmentação espaço-temporal (janela de 45 min de inatividade).
+- **Divergência na documentação do edital:** O edital citava 50 sensores, mas a base continha 61 equipamentos distintos. Solução: script de profiling (`audit_data.py`) com validação cruzada (`COUNT(DISTINCT NSerie)` + agrupamento volumétrico).
 
 ---
 
 ## 🔮 Possíveis Evoluções
-1.  **Ingestão em tempo real:** Evoluir o pipeline batch para ingestão por streaming (ex: Kafka).
-2.  **Modelos preditivos:** Utilizar os dados de fluxo para alimentar modelos de previsão de congestionamento (ex: LSTM).
-3.  **Enriquecimento de contexto:** Integrar dados meteorológicos e calendário de eventos para análise multivariada dos fluxos.
+
+1. **Ingestão em tempo real:** Evoluir o pipeline batch para ingestão por streaming (ex: Kafka).
+2. **Modelos preditivos:** Utilizar os dados de fluxo para alimentar modelos de previsão de congestionamento (ex: LSTM).
+3. **Enriquecimento de contexto:** Integrar dados meteorológicos e calendário de eventos para análise multivariada dos fluxos.
 
 ---
-> *Desenvolvido para o módulo final da Residência em Gêmeo Digital em 5G (Facens) — 2026*
+
+> _Desenvolvido para o módulo IA Aplicada da Residência em Gêmeo Digital em 5G (Facens) — 2026_
