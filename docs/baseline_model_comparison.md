@@ -1,36 +1,53 @@
 # Benchmark de Modelos de Clusterização: Inferência O-D Sorocaba
 
-Este documento consolida a avaliação científica das diferentes estratégias de *Machine Learning* Não-Supervisionado aplicadas ao agrupamento geográfico de radares de Sorocaba.
+Este documento consolida a avaliação comparativa das estratégias de clusterização não-supervisionada aplicadas ao agrupamento geográfico dos 61 sensores de tráfego de Sorocaba.
 
 ## 1. Tabela Comparativa de Performance
 
 | Modelo                   |   Score |   Zonas Formadas |   Ruídos/Isolados | Premissa Matemática                                            |
 |:-------------------------|--------:|-----------------:|------------------:|:---------------------------------------------------------------|
-| DBSCAN                   |  0.3134 |                3 |                 0 | Densidade Espacial e Distância Haversine (Realista)            |
-| K-Means                  |  0.4087 |                3 |                 0 | Distância Euclidiana, Clusters Esféricos sem suporte a Ruído   |
-| Agglomerative Clustering |  0.3568 |                3 |                 0 | Distância Haversine, Abordagem Hierárquica sem suporte a Ruído |
+| DBSCAN                   |  0.3134 |                3 |                 0 | Densidade Espacial e Distância Haversine                       |
+| K-Means                  |  0.4087 |                3 |                 0 | Distância Euclidiana, Clusters Esféricos, sem suporte a ruído  |
+| Agglomerative Clustering |  0.3568 |                3 |                 0 | Distância Euclidiana (linkage average), sem suporte a ruído    |
 
-## 2. Parecer Técnico (Análise Crítica)
+> **Nota sobre Ruídos/Isolados = 0 (DBSCAN):** Com os parâmetros adotados (`eps=2.0 km`, `min_samples=2`), todos os 61 sensores foram atribuídos a algum dos 3 clusters. Nenhum sensor foi classificado como ruído (`label == -1`). Isso significa que, para esta configuração, a **capacidade de isolamento de ruído** do DBSCAN — uma de suas vantagens teóricas — **não foi exercida na prática**. A malha de sensores de Sorocaba, com raio de 2 km entre vizinhos, não apresentou pontos suficientemente isolados para acionar esse mecanismo.
 
-### DBSCAN (O Modelo Escolhido)
-Apesar do seu *Silhouette Score* de **0.3134** parecer inferior matematicamente aos baselines gerados pelo K-Means, **o DBSCAN é o único modelo que reflete a realidade da topologia urbana**. Ele foi capaz de isolar cientificamente 0 radares como **ruído periférico**, impedindo que a distribuição assemelhada da cidade fosse corrompida. O DBSCAN busca formas orgânicas, tal qual rodovias e bairros, não formas geométricas perfeitas irreais.
+## 2. Parecer Técnico (Análise Comparativa)
 
-### K-Means (A Armadilha Comum)
-O **K-Means obteve um Score alto de 0.4087**. Uma pontuação maior que induz frequentemente um Cientista de Dados a escolhas erradas. Essa pontuação é um falso-positivo analítico por três razões físicas:
-1. O K-Means **não suporta distância Haversine nativamente**. Ele tenta usar distância Euclidiana (linha reta num plano cartesiano bidimensional), ignorando a curvatura espacial.
-2. O K-Means asfixia a variância, criando clusters como se fossem **esferas perfeitas**. Ruas não formam círculos perfeitos de aglomeração.
-3. O K-Means é **cego a ruídos e outliers**. Ele forçou os 0 radares periféricos e distantes a participarem forçadamente dos três clusters principais, puxando falsamente os centros de gravidade das Zonas de volta para o erro.
+### DBSCAN (Modelo Adotado)
+
+O DBSCAN obteve o menor Silhouette Score (0.3134) entre os três modelos. Essa métrica, isoladamente, não indica desempenho inferior: o Silhouette Score mede a separação geométrica entre clusters, e valores moderados são esperados em dados geoespaciais urbanos onde as fronteiras entre zonas são naturalmente difusas.
+
+A escolha pelo DBSCAN fundamenta-se em duas propriedades relevantes para o domínio de mobilidade urbana:
+
+1. **Métrica Haversine nativa:** O DBSCAN da scikit-learn aceita distância Haversine diretamente, respeitando a curvatura terrestre. O raio `eps` tem significado físico real (quilômetros).
+2. **Não requer definição prévia de k:** O número de clusters emerge dos dados, ao contrário do K-Means e do Agglomerative, que exigem especificação antecipada.
+
+O fato de todos os sensores terem sido absorvidos em clusters (sem ruído detectado) é consistente com a densidade da malha de radares em Sorocaba. Com parâmetros mais restritivos (ex: `eps=1.0 km`), sensores periféricos poderiam ser isolados — mas isso não foi explorado nesta versão.
+
+### K-Means
+
+O K-Means obteve o maior Silhouette Score (0.4087). Contudo, esse resultado deve ser interpretado com cautela:
+
+1. O K-Means opera com distância Euclidiana sobre coordenadas (lat, lon), o que introduz distorção em relação a distâncias geográficas reais.
+2. Pressupõe clusters convexos e de tamanhos similares — premissas que não se sustentam necessariamente em malhas viárias urbanas.
+3. Não possui mecanismo de detecção de outliers; todos os pontos são atribuídos ao cluster mais próximo.
+
+O score superior reflete clusters mais geometricamente separados, não necessariamente agrupamentos mais coerentes com a semântica de mobilidade.
 
 ### Agglomerative Clustering
-Apresentou um score de **0.3568**. Apesar de suportar corretamente a curvatura da terra (distância Haversine), e de seguir uma aproximação de variância hierárquica, ainda compartilha o pecado do K-Means: carece da habilidade fundamental de tratar anomalias e ruídos em dados capturados ao ar livre (IoT), classificando todos os sensores em um dos blocos.
 
-## Conclusão Científica e Fechamento de Etapa
-Esta comparação finaliza a arquitetura e cimenta uma decisão sênior: **Optar por uma métrica (Silhouette) estatisticamente modesta num modelo Density-Based (DBSCAN) em prol de se manter fidelidade técnica à realidade do espaço geográfico**. Essa análise prova que a precisão de ferramentas algorítmicas é inútil sem ancoragem teórica de Física, Mobilidade e Dados de Sensores. 
+Apresentou score intermediário (0.3568). A implementação utilizada operou com distância Euclidiana e linkage average. Compartilha com o K-Means a limitação de atribuir todos os pontos a clusters sem detecção de anomalias.
 
-A arquitetura Big Data / Lote de Sorocaba está homologada.
+## 3. Conclusão
+
+O DBSCAN foi adotado como modelo de produção por oferecer suporte nativo a distância geodésica e por não exigir definição prévia do número de clusters. O Silhouette Score de 0.3134 representa separação moderada, coerente com a distribuição geográfica dos sensores em Sorocaba.
+
+A comparação com K-Means e Agglomerative Clustering serve como baseline para contextualizar a escolha, não para declarar superioridade absoluta de um modelo sobre outro.
 
 ---
-*Relatório de benchmark e rastreabilidade automatizado gerado em 2026-05-09 11:21:43*
+*Relatório de benchmark gerado automaticamente em 2026-05-09 11:21:43 (data de execução original).*
+*Narrativa revisada em 2026-05-15 para alinhar texto à evidência factual.*
 
 ---
 ## Equipe: Pearsonianos - Desafio 1 Splice
