@@ -16,31 +16,45 @@
 
 <br>
 
-## 👥 A Equipe: Pearsonianos (Desafio 1 Splice)
+## 👥 Equipe: Pearsonianos (Desafio 1 Splice)
 *   **Binha Ferraz Dauma** | **Ednardo Pinheiro Peixoto** | **Eric Pimentel** | **Luis Felipe Ferreira**
 *   **Carlos Delfino** | **Dennis Giancarlo** | **Ana Temoteo** | **Adriano José**
 
 ---
 
-## 🎯 Objetivo do Projeto
-Gestores públicos de mobilidade necessitam de respostas baseadas em dados para alocação de infraestrutura. O nosso desafio técnico foi **inferir padrões de fluxo de Origem-Destino (O-D)** na cidade de Sorocaba-SP, utilizando uma malha de sensores de tráfego que, originalmente, **não fornecia rótulos explícitos de viagem**. 
+## 📌 Versão de banca vs. refinamento pós-banca
 
-Nosso foco foi transformar 76 milhões de registros (pings) desconexos em **Inteligência Acionável** capaz de alimentar as premissas de um Gêmeo Digital Urbano.
+Este repositório contém duas versões documentadas:
+
+| Versão | Tag / Branch | Data | Descrição |
+|--------|-------------|------|-----------|
+| **Entrega de banca** | Tag `v1-banca-ia-aplicada` | 09/05/2026 | Versão integral defendida na banca da Residência. Preservada como marco histórico imutável. |
+| **Refinamento pós-banca** | Branch `v2-pos-banca-profissional` | A partir de 15/05/2026 | Correções documentais, adição de limitações e melhorias de reprodutibilidade. Nenhuma alteração de lógica nos modelos. |
+
+Para acessar a versão exata da banca: `git checkout v1-banca-ia-aplicada`
+
+As diferenças entre as versões estão registradas no [`CHANGELOG.md`](CHANGELOG.md).
+
+---
+
+## 🎯 Objetivo do Projeto
+Gestores públicos de mobilidade necessitam de dados estruturados para decisões de alocação de infraestrutura. O desafio técnico deste projeto foi **inferir padrões de fluxo Origem-Destino (O-D)** na cidade de Sorocaba-SP, a partir de uma malha de 61 sensores de tráfego que não fornecia rótulos explícitos de viagem.
+
+O pipeline transforma 76 milhões de registros (pings de sensores) em uma Matriz O-D agregada por Macro-Zonas, utilizável como insumo para planejamento de transporte público.
 
 ---
 
 ## 💾 Acesso à Base de Dados (Google Drive)
-Os dados massivos originais não estão hospedados neste repositório devido ao seu volume (> 5GB). 
-Toda a base de dados que compõe as pastas `data/00_raw` até `data/03_gold` encontra-se [**Disponível neste Link do Google Drive**](https://drive.google.com/drive/folders/1Gw9GFrNwx6wabkjHKkRqk0U1aJmJ-wy5?usp=drive_link). 
-Para executar os códigos localmente, faça o download do conteúdo do link e coloque-o na raiz do projeto dentro da pasta `data/`.
+Os dados originais não estão hospedados neste repositório devido ao seu volume (> 5GB). 
+A base de dados que compõe as pastas `data/00_raw` até `data/03_gold` está [**disponível neste link do Google Drive**](https://drive.google.com/drive/folders/1Gw9GFrNwx6wabkjHKkRqk0U1aJmJ-wy5?usp=drive_link). 
+Para executar os scripts localmente, faça o download e coloque o conteúdo na pasta `data/` na raiz do projeto.
 
 ---
 
 ## 🏗️ Estrutura do Projeto
-O repositório está organizado segundo as melhores práticas de Engenharia de Software para Ciência de Dados:
 
 ```text
-📦 desafio1/
+📦 gemeo-digital--cidades-inteligentes/
  ┣ 📂 data/             # (Baixar do Drive) Bases divididas em Raw, Bronze, Silver e Gold
  ┣ 📂 docs/             # Documentação técnica, Canvas PDF e artefatos executivos
  ┣ 📂 img/              # Assets estáticos de imagem
@@ -49,23 +63,25 @@ O repositório está organizado segundo as melhores práticas de Engenharia de S
  ┃ ┣ 📜 audit_data.py                  # Profiling e Data Quality
  ┃ ┣ 📜 clean_bronze.py                # Higienização e tipagem (Camada Bronze)
  ┃ ┣ 📜 trip_segmentation.py           # Window Functions para Matriz O-D (Camada Silver)
- ┃ ┣ 📜 spatial_clustering_ia.py       # Modelo DBSCAN Não-Supervisionado (Camada Gold)
+ ┃ ┣ 📜 spatial_clustering_ia.py       # Modelo DBSCAN (Camada Gold)
+ ┃ ┣ 📜 compare_models_baseline.py     # Comparativo: DBSCAN vs K-Means vs Agglomerative
  ┃ ┣ 📜 generate_temporal_analysis.py  # Dashboard interativo Plotly
- ┃ ┗ 📜 generate_map.py                # Mapa Geoespacial Folium (Gêmeo Digital)
- ┣ 📜 index.html        # Hotsite/Portfólio Web (MVP Executivo)
- ┗ 📜 README.md         # Você está aqui
+ ┃ ┗ 📜 generate_map.py                # Mapa Geoespacial Folium
+ ┣ 📜 index.html        # Hotsite/Portfólio Web (GitHub Pages)
+ ┣ 📜 CHANGELOG.md      # Registro de versões e alterações
+ ┗ 📜 README.md         # Este arquivo
 ```
 
 ---
 
-## ⚙️ Engenharia de Dados (Pipeline ETL)
-Construímos uma arquitetura de dados escalável para processar volumes massivos sem estouro de memória (RAM), utilizando processamento *Out-Of-Core* via **DuckDB** e compressão colunar **Parquet**.
+## ⚙️ Pipeline de Dados (ETL)
+O processamento utiliza DuckDB para leitura out-of-core e Parquet para armazenamento colunar comprimido, permitindo processar os 76M de registros sem estouro de memória.
 
-O pipeline flui estritamente por 4 camadas:
-1.  **Camada Raw (`00_raw`):** Os arquivos CSV pesados originados da captura de IoT (Sensores).
-2.  **Camada Bronze (`01_bronze` - *clean_bronze.py*):** Ingestão bruta, higienização de separadores decimais falhos (vírgulas vs pontos) e conversão de strings de datas para objetos matemáticos de tempo (`TIMESTAMP`).
-3.  **Camada Silver (`02_silver` - *trip_segmentation.py*):** Onde a mágica analítica acontece. Aplicação de *Window Functions* para criar uma **Janela de Inatividade de 45 minutos**. Se um carro desaparece dos radares por mais de 45 minutos, declaramos sua rota como finalizada matematicamente. Aqui nasce a primeira *Matriz Origem-Destino Bruta*.
-4.  **Camada Gold (`03_gold` - *spatial_clustering_ia.py*):** A Inteligência Artificial em ação. O algoritmo geoespacial **DBSCAN** consome os pares O-D da camada Silver para agrupar as coordenadas físicas em pólos de alta densidade veicular. A IA formou **3 Macro-Zonas**, obtendo um *Silhouette Score* de `0.3134` (alta coesão espacial). O output final é a matriz de Macro-Corredores pronta para BI.
+O pipeline flui por 4 camadas:
+1.  **Camada Raw (`00_raw`):** Arquivos CSV originais dos sensores IoT.
+2.  **Camada Bronze (`01_bronze` — `clean_bronze.py`):** Ingestão, correção de separadores decimais (vírgulas → pontos) e conversão de strings de data para `TIMESTAMP`.
+3.  **Camada Silver (`02_silver` — `trip_segmentation.py`):** Segmentação de viagens via Window Functions. Aplica-se uma **janela de inatividade de 45 minutos**: se um veículo desaparece dos sensores por mais de 45 min, a viagem é encerrada. Esse threshold foi adotado com base em referências de mobilidade urbana, mas **não foi calibrado empiricamente para Sorocaba** (ver [Limitações](#-limitações-conhecidas)). Resultado: ~2.1 milhões de viagens na 1ª semana de janeiro.
+4.  **Camada Gold (`03_gold` — `spatial_clustering_ia.py`):** Clusterização DBSCAN (`eps=2.0 km`, `min_samples=2`, métrica Haversine) sobre coordenadas O-D. Formou **3 Macro-Zonas** com Silhouette Score de 0.3134 (separação moderada). Detalhes no [comparativo baseline](docs/baseline_model_comparison.md).
 
 ---
 
@@ -74,8 +90,8 @@ O pipeline flui estritamente por 4 camadas:
 **1. Instalação e Preparação:**
 ```bash
 # Clone este repositório
-git clone https://github.com/SEU-USUARIO/desafio1.git
-cd desafio1
+git clone https://github.com/enps2015/gemeo-digital--cidades-inteligentes.git
+cd gemeo-digital--cidades-inteligentes
 
 # Crie e ative um ambiente virtual
 python -m venv .venv
@@ -83,70 +99,72 @@ source .venv/bin/activate  # No Linux/Mac
 .venv\Scripts\activate     # No Windows
 
 # Instale as bibliotecas principais
-pip install duckdb pandas scikit-learn plotly folium numpy
+pip install duckdb pandas scikit-learn plotly folium numpy tabulate
 ```
-*Lembrete: Baixe a pasta `data/` do Google Drive e insira na raiz antes de prosseguir.*
+*Baixe a pasta `data/` do Google Drive e insira na raiz antes de prosseguir.*
 
 **2. Ordem de Execução do Pipeline:**
 ```bash
-# 1. Auditoria e Limpeza (Opcional se já baixar os parquets prontos)
+# 1. Auditoria e Limpeza (opcional se já baixou os Parquets prontos)
 python scripts/audit_data.py
 python scripts/clean_bronze.py
 
 # 2. Extração da Matriz Origem-Destino
 python scripts/trip_segmentation.py
 
-# 3. Modelagem IA Não-Supervisionada
+# 3. Clusterização Espacial
 python scripts/spatial_clustering_ia.py
 
-# 4. Geração do Gêmeo Digital Visuais
+# 4. Geração de Visualizações
 python scripts/generate_temporal_analysis.py
 python scripts/generate_map.py
+
+# (Opcional) Comparativo de modelos baseline
+python scripts/compare_models_baseline.py
 ```
 
 ---
 
-## 🌐 Portfólio Interativo (MVP Web)
-Como coroamento do projeto, consolidamos os dados em uma página executiva otimizada para o **GitHub Pages**. 
-O site de portfólio está disponível publicamente via **[GitHub Pages (Clique Aqui)](https://enps2015.github.io/gemeo-digital--cidades-inteligentes/)** e foi desenhado com estética *Dark/Cyber* para materializar o conceito de "Smart City". Nele, disponibilizamos:
-*   As regras do nosso **Business Model Canvas** em cards interativos.
-*   **Dashboard Temporal:** Gráficos interativos renderizados em Plotly.
-*   **Mapa Interativo de Fluxo:** Mapa tático Folium desenhando fisicamente a animação de tráfego pesado operando entre os centros de massa (Macro-Zonas) definidos pela Inteligência Artificial.
+## 🌐 Portfólio Interativo (GitHub Pages)
+Os resultados do projeto estão consolidados em uma página web publicada via **[GitHub Pages](https://enps2015.github.io/gemeo-digital--cidades-inteligentes/)**. A página disponibiliza:
+*   Cards com o **Business Model Canvas** do projeto.
+*   **Dashboard Temporal:** gráficos interativos Plotly com a distribuição horária e diária dos fluxos.
+*   **Mapa Interativo de Fluxo:** mapa Folium com representação visual dos corredores entre as Macro-Zonas identificadas pelo DBSCAN.
 
 ---
 
-## 🏆 Atualizações Pós-Banca (Homologação Final)
-Após a defesa bem-sucedida do projeto, realizamos um refinamento técnico profissional no repositório para cristalizar nossas entregas:
-*   **Comprovação Algorítmica (Baseline):** Criação do script `scripts/compare_models_baseline.py`, que executa o K-Means e o Agglomerative Clustering contra a nossa base. Isso provou matematicamente e geograficamente a superioridade do **DBSCAN** (escolhido originalmente) para a semântica de mobilidade viária.
-*   **Novo Relatório Analítico:** Geração do documento `docs/baseline_model_comparison.md` (e sua versão PDF), detalhando o rigor técnico da análise comparativa dos três algoritmos.
-*   **Refinamento de UX/UI (Hotsite):** Auditoria de CSS e aplicação de responsividade extrema no arquivo `index.html`. Foram aplicadas diretivas de isolamento de layout, garantindo que o painel Plotly (`2x2` no Desktop e `3x1` no celular) e o mapa dinâmico Folium sejam consumidos com perfeição visual em qualquer tela.
-*   **Atualização Documental:** Inclusão nominal de todos os membros da equipe nos relatórios em formato Markdown e geração de todas as vias consolidadas em PDF, juntamente com a apresentação de encerramento (`Apresentacao-do-desafio1-splice.pdf`).
+## 🔒 Privacidade e Tratamento de Dados
+
+- O campo `Placa` no dataset original contém hashes de comprimento fixo, conforme recebido no dataset fornecido pelo órgão responsável. O pipeline não executa nenhum processo de anonimização adicional — os dados já chegam pseudonimizados.
+- O pipeline não armazena nem processa dados pessoais identificáveis (PII) em nenhuma camada. As camadas Silver e Gold operam exclusivamente sobre coordenadas geográficas agregadas.
+- Este projeto **não declara conformidade com a LGPD**, pois tal afirmação requer parecer jurídico formal que não foi obtido.
 
 ---
 
-## 🚧 Desafios Encontrados e Soluções Adotadas
-*   **Problema (Estouro de Memória):** Notebooks congelando ao tentar ler a base raw (12GB csv).  
-    *Solução:* Adoção da arquitetura *DuckDB + Parquet* em streaming.
-*   **Problema (Ausência de Target/Variável Alvo):** Nenhuma coluna dizia para onde os carros iam.  
-    *Solução:* Desenvolvimento de uma heurística espaço-temporal de 45 minutos para "recortar" o histórico do veículo em sub-viagens.
-*   **Problema (Divergência Documental):** O edital falava em 50 sensores, mas a base continha lixo e radares anômalos.  
-    *Solução:* Script rigoroso de *Data Profiling* para atestar os 61 equipamentos físicos reais e remover hardwares "fantasmas".
+## ⚠️ Limitações Conhecidas
 
-## 🚀 Melhorias Futuras e Roadmap
-1.  **Integração em Tempo Real (Kafka/Streaming):** Evoluir o pipeline em lote (*batch*) para ingestão de dados por telemetria contínua.
-2.  **Machine Learning Preditivo (Deep Learning):** Alimentar Redes Neurais Long Short-Term Memory (LSTM) com o resultado das nossas Macro-Zonas para não apenas ler o presente, mas **prever engarrafamentos** em janelas de 30 minutos no futuro.
-3.  **Fusão de Dados (Clima e Eventos):** Enriquecer a matriz com dados meteorológicos e agenda da cidade (shows, feriados) para criar um Gêmeo Digital responsivo ao ambiente urbano vivo.
+1. **Amostragem temporal limitada:** A Matriz O-D foi construída sobre a 1ª semana de janeiro/2026 (7 dias). Não há validação cruzada com outras semanas ou meses. Generalizações para outros períodos devem ser feitas com cautela.
+2. **Granularidade dos sensores:** O DBSCAN clusteriza 61 pontos fixos (sensores). A resolução espacial é limitada pela densidade da malha de radares, não pela capacidade do algoritmo.
+3. **Heurística de 45 minutos sem calibração local:** O threshold de inatividade foi adotado com base em literatura de mobilidade urbana, mas não foi calibrado empiricamente para o contexto específico de Sorocaba. Não há análise de sensibilidade comparando outros valores.
+4. **Silhouette Score moderado:** O valor de 0.3134 indica separação moderada entre clusters. É um resultado típico para dados geoespaciais urbanos onde as fronteiras entre zonas são naturalmente difusas — não é indicativo de falha, mas também não constitui evidência de excelência.
+5. **DBSCAN com Ruídos = 0:** Com os parâmetros adotados (`eps=2.0 km`, `min_samples=2`), todos os 61 sensores foram absorvidos em clusters. A capacidade de isolamento de ruído do DBSCAN — uma de suas vantagens teóricas — não foi exercida nesta configuração.
+6. **Sem `requirements.txt`:** As dependências ainda não estão travadas com versões exatas.
+7. **Sem testes automatizados:** O pipeline não possui suite de testes.
+8. **Dependência de dados externos:** A execução completa do pipeline depende do download da base de dados via Google Drive.
 
 ---
-> *Desenvolvido para o módulo final da Residência em Gêmeo Digital em 5G (Facens) - Ano 2026*
+
+## 🚧 Desafios Técnicos e Soluções Adotadas
+*   **Estouro de memória:** Notebooks não suportavam a base raw (~12GB CSV). Solução: arquitetura DuckDB + Parquet em processamento out-of-core.
+*   **Ausência de variável-alvo:** Nenhuma coluna indicava destino dos veículos. Solução: heurística de segmentação espaço-temporal (janela de 45 min de inatividade).
+*   **Divergência na documentação do edital:** O edital citava 50 sensores, mas a base continha 61 equipamentos distintos. Solução: script de profiling (`audit_data.py`) com validação cruzada (`COUNT(DISTINCT NSerie)` + agrupamento volumétrico).
 
 ---
-## Equipe: Pearsonianos - Desafio 1 Splice
-* Binha Ferraz Dauma
-* Ednardo Pinheiro Peixoto
-* Eric Pimentel
-* Luis Felipe Ferreira
-* Carlos Delfino
-* Dennis Giancarlo
-* Ana Temoteo
-* Adriano José
+
+## 🔮 Possíveis Evoluções
+1.  **Ingestão em tempo real:** Evoluir o pipeline batch para ingestão por streaming (ex: Kafka).
+2.  **Modelos preditivos:** Utilizar os dados de fluxo para alimentar modelos de previsão de congestionamento (ex: LSTM).
+3.  **Enriquecimento de contexto:** Integrar dados meteorológicos e calendário de eventos para análise multivariada dos fluxos.
+
+---
+> *Desenvolvido para o módulo final da Residência em Gêmeo Digital em 5G (Facens) — 2026*
