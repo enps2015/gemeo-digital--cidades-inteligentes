@@ -359,15 +359,15 @@
         <h2 class="section-title">Engenharia de Dados (A Base)</h2>
         <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); text-align: center;">
             <div class="card" style="border-color: var(--neon-magenta); align-items: center;">
-                <h3 style="font-size: 3rem; color: var(--neon-magenta); margin-bottom: 0;">76.6M</h3>
+                <h3 id="stat-pings" style="font-size: 3rem; color: var(--neon-magenta); margin-bottom: 0;">76.6M</h3>
                 <p style="text-align: center;">Pings de Sensores Brutos</p>
             </div>
             <div class="card" style="border-color: var(--neon-cyan); align-items: center;">
-                <h3 style="font-size: 3rem; color: var(--neon-cyan); margin-bottom: 0;">61</h3>
+                <h3 id="stat-sensores" style="font-size: 3rem; color: var(--neon-cyan); margin-bottom: 0;">61</h3>
                 <p style="text-align: center;">Radares Físicos Ativos</p>
             </div>
             <div class="card" style="border-color: var(--neon-magenta); align-items: center;">
-                <h3 style="font-size: 3rem; color: var(--neon-magenta); margin-bottom: 0;">3M+</h3>
+                <h3 id="stat-veiculos" style="font-size: 3rem; color: var(--neon-magenta); margin-bottom: 0;">3M+</h3>
                 <p style="text-align: center;">Veículos Únicos Rastreados</p>
             </div>
             <div class="card" style="border-color: var(--neon-cyan); align-items: center;">
@@ -456,5 +456,14 @@
         <p>Gêmeos Digitais TIC51 &copy; 2026. Feito com <span>Inteligência</span> e Código.</p>
     </footer>
 
+    <!-- Script para carregar estatísticas dinâmicas (se existirem) -->
+    <script src="data/stats.js" onerror="console.log('Estatísticas locais (stats.js) não encontradas. Usando valores fixos originais.');"></script>
+    <script>
+        if (typeof DASHBOARD_STATS !== 'undefined') {
+            document.getElementById('stat-pings').innerText = DASHBOARD_STATS.total_pings;
+            document.getElementById('stat-sensores').innerText = DASHBOARD_STATS.total_sensores;
+            document.getElementById('stat-veiculos').innerText = DASHBOARD_STATS.total_veiculos;
+        }
+    </script>
 </body>
 </html>

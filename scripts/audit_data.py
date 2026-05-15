@@ -19,6 +19,14 @@ def print_header(title):
     print(f"  {title}")
     print("="*80)
 
+def format_size(size_in_bytes):
+    if size_in_bytes < 1024**2:
+        return f"{size_in_bytes / 1024:.2f} KB"
+    elif size_in_bytes < 1024**3:
+        return f"{size_in_bytes / (1024**2):.2f} MB"
+    else:
+        return f"{size_in_bytes / (1024**3):.2f} GB"
+
 def main():
     print_header("INICIANDO AUDITORIA DE DADOS (DUCKDB)")
     start_time = time.time()
@@ -28,8 +36,8 @@ def main():
         print("Por favor, atualize a variável PARQUET_FILE no script audit_data.py com o caminho correto.")
         return
         
-    size_gb = os.path.getsize(PARQUET_FILE) / (1024**3)
-    print(f"[INFO] Arquivo localizado. Tamanho: {size_gb:.2f} GB")
+    size_bytes = os.path.getsize(PARQUET_FILE)
+    print(f"[INFO] Arquivo localizado. Tamanho: {format_size(size_bytes)}")
 
     # Inicia a conexão com o DuckDB em memória
     con = duckdb.connect(database=':memory:')
@@ -102,6 +110,26 @@ def main():
         cardinality = con.execute(f"SELECT {c_query_str} FROM read_parquet('{PARQUET_FILE}')").df()
         print(tabulate(cardinality, headers='keys', tablefmt='psql', showindex=False))
 
+        # Exportar arquivo de estatísticas dinâmicas para o HTML (Portfólio)
+        def format_metric(num):
+            if num >= 1_000_000:
+                return f"{num/1_000_000:.1f}M"
+            elif num >= 1_000:
+                return f"{num/1_000:.0f}K"
+            return str(num)
+
+        v_unicos = cardinality['veiculos_unicos'].iloc[0] if 'veiculos_unicos' in cardinality.columns else 0
+        s_unicos = cardinality['sensores_unicos'].iloc[0] if 'sensores_unicos' in cardinality.columns else 0
+        
+        js_content = f"""const DASHBOARD_STATS = {{
+    "total_pings": "{format_metric(total_rows)}",
+    "total_sensores": "{s_unicos}",
+    "total_veiculos": "{format_metric(v_unicos)}"
+}};"""
+        with open('data/stats.js', 'w', encoding='utf-8') as f:
+            f.write(js_content)
+        print("[INFO] Estatísticas exportadas dinamicamente para data/stats.js")
+
     # 5. EXTRAÇÃO DA AMOSTRA (GOLDEN SAMPLE)
     print_header("5. EXTRAÇÃO DE AMOSTRA PARA DESENVOLVIMENTO (GOLDEN SAMPLE)")
     
@@ -117,8 +145,8 @@ def main():
                 SELECT * FROM read_parquet('{PARQUET_FILE}') USING SAMPLE 1%
             ) TO '{SAMPLE_OUTPUT}' (FORMAT PARQUET)
         """)
-        s_size = os.path.getsize(SAMPLE_OUTPUT) / (1024**2)
-        print(f"[SUCESSO] Amostra salva em {SAMPLE_OUTPUT} (Tamanho: {s_size:.2f} MB)")
+        s_size_bytes = os.path.getsize(SAMPLE_OUTPUT)
+        print(f"[SUCESSO] Amostra salva em {SAMPLE_OUTPUT} (Tamanho: {format_size(s_size_bytes)})")
         
     end_time = time.time()
     print_header(f"AUDITORIA CONCLUÍDA EM {end_time - start_time:.2f} SEGUNDOS")
