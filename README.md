@@ -60,7 +60,9 @@ Para executar os scripts localmente, faça o download e coloque o conteúdo na p
 ```text
 📦 gemeo-digital--cidades-inteligentes/
  ┣ 📂 data/             # (Baixar do Drive) Bases divididas em Raw, Bronze, Silver e Gold
+ ┣ 📂 data_sample/      # Dados sintéticos/amostrais para testes rápidos (sem PII)
  ┣ 📂 docs/             # Documentação técnica, Canvas PDF e artefatos executivos
+ ┃ ┗ 📜 reprodutibilidade.md           # Guia de execução e Smoke Test
  ┣ 📂 img/              # Assets estáticos de imagem
  ┣ 📂 notebooks/        # Experimentações iniciais em Jupyter
  ┣ 📂 scripts/          # Pipeline algorítmico principal (.py)
@@ -70,9 +72,11 @@ Para executar os scripts localmente, faça o download e coloque o conteúdo na p
  ┃ ┣ 📜 spatial_clustering_ia.py       # Modelo DBSCAN (Camada Gold)
  ┃ ┣ 📜 compare_models_baseline.py     # Comparativo: DBSCAN vs K-Means vs Agglomerative
  ┃ ┣ 📜 generate_temporal_analysis.py  # Dashboard interativo Plotly
- ┃ ┗ 📜 generate_map.py                # Mapa Geoespacial Folium
+ ┃ ┣ 📜 generate_map.py                # Mapa Geoespacial Folium
+ ┃ ┗ 📜 generate_demo_data.py          # Gerador de dados sintéticos para avaliação
  ┣ 📜 index.html        # Hotsite/Portfólio Web (GitHub Pages)
  ┣ 📜 CHANGELOG.md      # Registro de versões e alterações
+ ┣ 📜 requirements.txt  # Dependências e bibliotecas do projeto (versões travadas)
  ┗ 📜 README.md         # Este arquivo
 ```
 
@@ -88,6 +92,13 @@ O pipeline flui por 4 camadas:
 2. **Camada Bronze (`01_bronze` — `clean_bronze.py`):** Ingestão, correção de separadores decimais (vírgulas → pontos) e conversão de strings de data para `TIMESTAMP`.
 3. **Camada Silver (`02_silver` — `trip_segmentation.py`):** Segmentação de viagens via Window Functions. Aplica-se uma **janela de inatividade de 45 minutos**: se um veículo desaparece dos sensores por mais de 45 min, a viagem é encerrada. Esse threshold foi adotado como heurística operacional inicial e **ainda não foi calibrado empiricamente para Sorocaba** (ver [Limitações](#-limitações-conhecidas)). Resultado: ~2.1 milhões de viagens na 1ª semana de janeiro.
 4. **Camada Gold (`03_gold` — `spatial_clustering_ia.py`):** Clusterização DBSCAN (`eps=2.0 km`, `min_samples=2`, métrica Haversine) aplicada sobre as **coordenadas geográficas dos 61 sensores físicos**. O algoritmo formou **3 Macro-Zonas** (Silhouette Score 0.3134 — separação moderada). Os pares O-D extraídos na camada Silver são então **agregados por Macro-Zona**, gerando a Matriz O-D final entre corredores. Detalhes no [comparativo baseline](docs/baseline_model_comparison.md).
+
+---
+
+## 🚀 Teste Rápido / Avaliadores (Smoke Test)
+
+Não quer baixar os >5GB de dados originais?
+Preparamos um **[Guia de Reprodutibilidade e Teste Rápido (Smoke Test)](docs/reprodutibilidade.md)** para gerar dados sintéticos em segundos e validar a execução da arquitetura e dos algoritmos de ponta a ponta na sua máquina.
 
 ---
 
