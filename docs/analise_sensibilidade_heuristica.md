@@ -37,10 +37,17 @@ O *trade-off* teórico:
 Como previsto pela teoria de tráfego, janelas curtas sofrem super-segmentação (+13.69% no volume de viagens no limiar de 15 min em relação ao *baseline*). Um achado fundamental desta base é a **Duração Mediana de 0 min**. Isso evidencia que a grande maioria das "viagens" inferidas consiste em detecções isoladas, refletindo a esparsidade da malha de sensores.
 
 ### O Threshold de 45 Minutos é Defensável?
-**Sim, o threshold provou-se altamente defensável e metodologicamente estável.**
-1. **Estabilidade de Rotas Críticas:** O Top 10 corredores (os pares de radares com maior fluxo) da janela de 45 minutos tem alta interseção com as outras janelas (ex: 10/10 no próprio baseline).
-2. **Suavização do Decaimento:** A variação percentual de volume é assintótica. Os 45 minutos atuam na "zona de ouro", sem super-fragmentar e sem distorcer as rotas principais.
+**O threshold mostrou-se defensável como compromisso operacional.**
+1. **Estabilidade de Rotas Críticas:** O Top 10 corredores (os pares de radares com maior fluxo) demonstra alta estabilidade estrutural (interseção mínima de 9/10 e média de 9.5/10 em relação às demais janelas).
+2. **Suavização do Decaimento:** A variação percentual de volume é assintótica. Os 45 minutos atuam como um ponto de compromisso operacional, balanceando a super-fragmentação e a distorção das rotas principais.
 
-## 6. Próximos Passos
+## 6. Limitações da Análise
+Em prol da honestidade intelectual e rigor acadêmico, as seguintes limitações metodológicas devem ser observadas:
+- **Ausência de *Ground Truth*:** Não há dados validados externamente (ex: GPS, apps de navegação) para comprovar categoricamente se as viagens inferidas ocorreram exatamente naqueles minutos. A análise avalia consistência interna.
+- **Viés de Sazonalidade:** A validação incidiu apenas sobre a primeira semana de Janeiro (férias escolares). O decaimento de volume pode apresentar formatos diferentes em dias de pico letivo ou chuvas intensas.
+- **Mediana 0 min:** O fato da mediana ser sempre 0 evidencia que a grande maioria das "viagens" são pings isolados de radares desconectados, apontando limitações na densidade espacial dos sensores de tráfego de Sorocaba.
+- **Não prova valor ótimo:** Esta análise atesta apenas que 45 minutos é metodologicamente estável e seguro; não prova matematicamente ser a "constante universal" ótima da cidade inteligente.
+
+## 7. Próximos Passos
 - Estender a inferência cruzando com a velocidade média nos radares.
 - Validar em semanas chuvosas ou de pico letivo.

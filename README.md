@@ -62,7 +62,9 @@ Para executar os scripts localmente, faça o download e coloque o conteúdo na p
  ┣ 📂 data/             # (Baixar do Drive) Bases divididas em Raw, Bronze, Silver e Gold
  ┣ 📂 data_sample/      # Dados sintéticos/amostrais para testes rápidos (sem PII)
  ┣ 📂 docs/             # Documentação técnica, Canvas PDF e artefatos executivos
- ┃ ┗ 📜 reprodutibilidade.md           # Guia de execução e Smoke Test
+ ┃ ┣ 📜 reprodutibilidade.md           # Guia de execução e Smoke Test
+ ┃ ┣ 📜 analise_sensibilidade_heuristica.md # Relatório de estabilidade metodológica
+ ┃ ┗ 📜 analise_sensibilidade_heuristica.html # Dashboard HTML interativo
  ┣ 📂 img/              # Assets estáticos de imagem
  ┣ 📂 notebooks/        # Experimentações iniciais em Jupyter
  ┣ 📂 scripts/          # Pipeline algorítmico principal (.py)
@@ -73,7 +75,8 @@ Para executar os scripts localmente, faça o download e coloque o conteúdo na p
  ┃ ┣ 📜 compare_models_baseline.py     # Comparativo: DBSCAN vs K-Means vs Agglomerative
  ┃ ┣ 📜 generate_temporal_analysis.py  # Dashboard interativo Plotly
  ┃ ┣ 📜 generate_map.py                # Mapa Geoespacial Folium
- ┃ ┗ 📜 generate_demo_data.py          # Gerador de dados sintéticos para avaliação
+ ┃ ┣ 📜 generate_demo_data.py          # Gerador de dados sintéticos para avaliação
+ ┃ ┗ 📜 sensitivity_inactivity_window.py # Análise paramétrica da heurística de segmentação
  ┣ 📜 index.html        # Hotsite/Portfólio Web (GitHub Pages)
  ┣ 📜 CHANGELOG.md      # Registro de versões e alterações
  ┣ 📜 requirements.txt  # Dependências e bibliotecas do projeto (versões travadas)
@@ -162,6 +165,10 @@ Os resultados do projeto estão consolidados em uma página web publicada via **
 - As visualizações públicas (dashboard, mapa, hotsite) operam exclusivamente com dados agregados por sensor, Macro-Zona e corredor — sem granularidade individual de veículo.
 - O projeto **não tenta reidentificar indivíduos** a partir dos hashes nem cruza dados com bases externas.
 - Este projeto **não declara conformidade plena com a LGPD**, pois tal afirmação requer parecer jurídico formal que não foi obtido.
+---
+
+## 🔬 Análise de Sensibilidade da Heurística
+Para garantir a governança estrutural da Matriz O-D, desenvolvemos o script paramétrico `sensitivity_inactivity_window.py` (Fase 3 pós-banca). Ele testou limites temporais de **15, 30, 45, 60 e 90 minutos**. Os resultados comprovaram que 45 minutos atua como um **compromisso operacional defensável**, pois retém alta estabilidade nos corredores O-D críticos e reduz a super-fragmentação de viagens curtas. Mais detalhes no [Relatório Metodológico](docs/analise_sensibilidade_heuristica.md) e no [Dashboard Interativo](docs/analise_sensibilidade_heuristica.html).
 
 ---
 
@@ -169,7 +176,7 @@ Os resultados do projeto estão consolidados em uma página web publicada via **
 
 1. **Amostragem temporal limitada:** A Matriz O-D foi construída sobre a 1ª semana de janeiro/2026 (7 dias). Não há validação cruzada com outras semanas ou meses. Generalizações para outros períodos devem ser feitas com cautela.
 2. **Granularidade dos sensores:** O DBSCAN clusteriza 61 pontos fixos (sensores). A resolução espacial é limitada pela densidade da malha de radares, não pela capacidade do algoritmo.
-3. **Heurística de 45 minutos sem calibração local:** O threshold de inatividade foi adotado com base em literatura de mobilidade urbana, mas não foi calibrado empiricamente para o contexto específico de Sorocaba. Não há análise de sensibilidade comparando outros valores.
+3. **Heurística de 45 minutos sem ground truth externo:** O threshold de inatividade (45 min) foi submetido à rigorosa análise de sensibilidade matemática e mostrou-se um bom compromisso operacional. Contudo, não há validação com dados validados externamente (ex: GPS de frota) para atestar inquestionavelmente se as viagens inferidas espelham exatamente a realidade física daquela semana, avaliando apenas a consistência interna.
 4. **Silhouette Score moderado:** O valor de 0.3134 indica separação moderada entre clusters. É um resultado típico para dados geoespaciais urbanos onde as fronteiras entre zonas são naturalmente difusas — não é indicativo de falha, mas também não constitui evidência de excelência.
 5. **DBSCAN com Ruídos = 0:** Com os parâmetros adotados (`eps=2.0 km`, `min_samples=2`), todos os 61 sensores foram absorvidos em clusters. A capacidade de isolamento de ruído do DBSCAN — uma de suas vantagens teóricas — não foi exercida nesta configuração.
 6. **Reprodutibilidade parcial:** o projeto já possui requirements.txt e smoke test sintético, mas a reprodução completa dos resultados oficiais ainda depende do download externo da base original.

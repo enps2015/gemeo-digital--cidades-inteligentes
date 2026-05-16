@@ -30,6 +30,9 @@ Nenhuma alteração nesta seção existia na versão entregue à banca.
 - Gerador de dados sintéticos para smoke test (`scripts/generate_demo_data.py`)
 - Exportação local dinâmica de estatísticas em `data/stats.js`
 - Hotsite (`index.html`) dinâmico reagindo ativamente à base de dados processada
+- Fase 3: Script paramétrico de Análise de Sensibilidade da inatividade de veículos (`scripts/sensitivity_inactivity_window.py`) testando thresholds de 15, 30, 45, 60 e 90 minutos
+- Fase 3: Relatório Markdown automatizado de estabilidade (`docs/analise_sensibilidade_heuristica.md`)
+- Fase 3: Dashboard HTML dinâmico das curvas de decaimento de viagens (`docs/analise_sensibilidade_heuristica.html`)
 
 ---
 
